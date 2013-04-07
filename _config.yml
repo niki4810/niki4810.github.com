@@ -4,7 +4,7 @@
 
 url: http://niki4810.github.com
 title: Octoblog
-subtitle: A blogging framework for hackers.
+subtitle: A technical blog on Javascript framworks.
 author: Nikhilesh Katakam
 simple_search: http://google.com/search
 description:
@@ -39,7 +39,7 @@ pygments: false # default python pygments have been replaced by pygments.rb
 paginate: 10          # Posts per page on the blog index
 pagination_dir: blog  # Directory base for pagination URLs eg. /blog/page/2/
 recent_posts: 5       # Posts in the sidebar Recent Posts section
-excerpt_link: "Read on &rarr;"  # "Continue reading" link text at the bottom of excerpted articles
+excerpt_link: "Read on"  # "Continue reading" link text at the bottom of excerpted articles
 
 titlecase: true       # Converts page and post titles to titlecase
 
@@ -59,7 +59,7 @@ default_asides: [asides/recent_posts.html, asides/github.html, asides/twitter.ht
 
 # Github repositories
 github_user: niki4810
-github_repo_count: 2
+github_repo_count: 5
 github_show_profile_link: true
 github_skip_forks: true
 
