@@ -8,11 +8,16 @@ categories: Backbone Backbone-ModelBinder Data-Binding
 
 # Prologue
 
-One of the first things any developer migrating into the Javascript world would look for is to find common coding practices and concepts. `Data-Binding` is one such concept which facilitates bi-directional binding between views and its associated models.<!-- more --> While each programming language might have its own way for achieving this, Javascript does provide a wide variety of options for implementing 'Data-Binding'. In this post, I will show how easy it is to bind your Backbone models to views using the  Backbone.ModelBinder plugin. 
+One of the first things any developer migrating into the Javascript world would look for is to find common coding practices and concepts. `Data-Binding` is one such concept which facilitates bi-directional binding between views and its associated models.<!-- more --> While each programming language might have its own way for achieving this, Javascript does provide a wide variety of options for implementing `Data-Binding`. In this post, I will show, how easy it is to bind your Backbone models to views using the Backbone.ModelBinder plugin. 
 
 # How can we achieve `Data-Binding` using ModelBinder?
 
-To illustrate this, we will be building a simple application which looks like this: [Link](http://jsfiddle.net/niki4810/CSyAz/embedded/result/). The application contains two views, an `editor view` for entering information and a `viewer view` for previewing the same information in read only mode. Both these view display the following information :
+To illustrate this, we will be building a simple application which looks like this: [Link](http://jsfiddle.net/niki4810/CSyAz/embedded/result/). 
+
+* The annotate source code for this example application can be found at: [Source](http://niki4810.github.io/annotate-sources/model-binding.html)
+* The complete fiddle can be found at : [Fiddle](http://jsfiddle.net/niki4810/CSyAz/)
+
+The application contains two views, an `editor view` for entering information and a `viewer view` for previewing the same information in read only mode. Both these views display the following information :
 
 * First Name
 * Last Name
@@ -23,12 +28,12 @@ To illustrate this, we will be building a simple application which looks like th
  
 Some of the requirements for our application are
 
-1. As we update a field on the edit view, the corresponding field on the preview view should be updated
+1. As we update a field in the edit view, the corresponding field on the preview view should be updated
 2. When we update the `salary` field, the view should format the value as money
-3. When the `favorite search engine` field is changed on the edit view, the preview view should render a hyperlink and should update both the `label` and the `href` properties on that hyperlink.
+3. When the `favorite search engine` field is changed in the edit view, the preview view should render a hyperlink and should update both the `label` and the `href` properties on that hyperlink.
 
 
-Now that we have out requirements, As a first step we create a `Backbone Model` and set some default values in it.
+Now that we have our requirements set, as a first step we create a `Backbone Model` and set some default values in it.
 
 ```javascript
     //create a instance of Backbone Model with some default values.
@@ -41,7 +46,7 @@ Now that we have out requirements, As a first step we create a `Backbone Model` 
     });
 ```
 
-Create a converter function , that formats the given value as money, for example 123 gets converted to $123.00. This function takes two parameters `value` the amount that needs to be formatted & `direction`, which has two values `ModelToView` or `ViewToModel`. Both these values are automatically supplied by the model binder framework when a change occurs on the binded element.
+Create a converter function , that formats the given value as money, for example `123` gets converted to `$123.00`. This function takes two parameters: a `value` parameter, which is the amount that needs to be formatted & `direction`, which has two possible values `ModelToView` or `ViewToModel`. Both these values are automatically supplied by the model binder plugin when a change occurs on the binded element.
 
 ```javascript
 var salaryConverter = function (direction, value) {
@@ -55,7 +60,7 @@ var salaryConverter = function (direction, value) {
 };
 ```
 
-For each view we pass in a bindings object, which determines, which element should be bound to which property on the model. For example, to bind the `firstName` property on the model to an element with `name set to firstName` on the edit view, the binding map would look like.  
+For each view we pass in a bindings object, which determines, which element should be bound to which property on the model. For example, to bind the `firstName` property on the model to an element with `name set to firstName` on the edit view, the bindings object would look like:  
 
 ```javascript
 var editorBinding = {
@@ -63,11 +68,11 @@ var editorBinding = {
 }
 ```
 
-The literal value `firstName` points to the `key` on the model, and the `[name="firstName"]` acts a selector for selecting an element on our Backbone View.
+The literal value `firstName` points to an `attribute` on the Backbone model, and the `[name="firstName"]` acts a selector for selecting an element in the edit view (which is a Backbone View instance).
 
 ### Using the `converter` function
 
-Similarly to firstName, we apply set other bindings on the object as well
+Similar to firstName, we set other bindings for other attributes as well
 
 ```javascript
 var editorViewBindings = {
@@ -82,7 +87,11 @@ var editorViewBindings = {
 };
 ````
 
-As you might have already noticed, for the `salary` attribute we set the value as a object with internally has two properties. `selector` property determines which element this property should bound to, in this case an element with `name set to salary`. We assign the `salaryConverter` function to the `converter` property. So whenever there is a change event on element with `[name = "salary"]`, the Backbone ModelBinder plugin calls the `salaryConverter` twice. Once from `Model to view` and the other from `View to Model`. Through this we can achieve our second requirement where we want to format the salary attribute as money when displaying on the view.
+As you might have already noticed, for the `salary` attribute we set the value as a object with internally has two properties:
+
+* `selector` property determines which element this property should be bound to. In this case an element with `name property set to salary`.
+
+* We assign the `salaryConverter` function to the `converter` property. So whenever there is a change event on element with `[name = "salary"]`, the Backbone ModelBinder plugin calls the `salaryConverter` twice. Once from `Model to view` and the other from `View to Model`. Through this we can achieve our second requirement where we want to format the salary attribute as money when displaying on the view.
 
 
 ### using the `elAttribute`
@@ -200,7 +209,7 @@ $(".container").append(myEditorView.render().$el);
 $(".container").append(myViewerView.render().$el);
 ```
 
-The complete source code for this example can be found at the following [fiddle](http://jsfiddle.net/niki4810/CSyAz/). Although this looks like a lot of code, it simple once we understand the basic concept behind model binding.
+As mentioned earlier, the complete source code for this example can be found at the following [fiddle](http://jsfiddle.net/niki4810/CSyAz/). Although this looks like a lot of code, it simple once we understand the basic concept behind model binding.
 
 
 # What are other alternatives for `Data-Binding` Backbone Views?
