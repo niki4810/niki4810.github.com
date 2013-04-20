@@ -85,9 +85,9 @@ var editorViewBindings = {
         "pro": '[name = "pro"]',
         "favSearch": '[name = "favSearch"]'
 };
-````
+```
 
-As you might have already noticed, for the `salary` attribute we set the value as a object with internally has two properties:
+As you might have already noticed, for the `salary` attribute we set the value as a object which internally has two properties:
 
 * `selector` property determines which element this property should be bound to. In this case an element with `name property set to salary`.
 
