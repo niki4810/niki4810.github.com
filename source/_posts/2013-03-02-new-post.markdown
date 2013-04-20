@@ -219,7 +219,7 @@ As they say, there are a trillion ways for doing million things, Here are some o
 * [KnockBack](http://kmalakoff.github.io/knockback/)
 * [Rivets.js](http://rivetsjs.com/)
 
-I personally feel ModelBinder is much simpler in terms of implementation than the above to frameworks.
+I personally feel ModelBinder is much simpler in terms of implementation than the above two frameworks.
 
 
 # About Backbone.ModelBinder
