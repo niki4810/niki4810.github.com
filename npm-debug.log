@@ -1,0 +1,44 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'node', '/usr/local/bin/npm', 'install', '-g', 'requirejs' ]
+2 info using npm@1.2.17
+3 info using node@v0.10.3
+4 verbose read json /usr/local/lib/package.json
+5 verbose read json /usr/local/lib/package.json
+6 verbose cache add [ 'requirejs', null ]
+7 verbose cache add name=undefined spec="requirejs" args=["requirejs",null]
+8 verbose parsed url { protocol: null,
+8 verbose parsed url   slashes: null,
+8 verbose parsed url   auth: null,
+8 verbose parsed url   host: null,
+8 verbose parsed url   port: null,
+8 verbose parsed url   hostname: null,
+8 verbose parsed url   hash: null,
+8 verbose parsed url   search: null,
+8 verbose parsed url   query: null,
+8 verbose parsed url   pathname: 'requirejs',
+8 verbose parsed url   path: 'requirejs',
+8 verbose parsed url   href: 'requirejs' }
+9 silly lockFile f2b16c35-requirejs requirejs
+10 verbose lock requirejs /Users/nikhileshkatakam/.npm/f2b16c35-requirejs.lock
+11 silly lockFile f2b16c35-requirejs requirejs
+12 verbose addNamed [ 'requirejs', '' ]
+13 verbose addNamed [ null, '' ]
+14 silly lockFile e9b02655-requirejs requirejs@
+15 verbose lock requirejs@ /Users/nikhileshkatakam/.npm/e9b02655-requirejs.lock
+16 silly lockFile e9b02655-requirejs requirejs@
+17 error Error: EACCES, open '/Users/nikhileshkatakam/.npm/e9b02655-requirejs.lock'
+17 error  { [Error: EACCES, open '/Users/nikhileshkatakam/.npm/e9b02655-requirejs.lock']
+17 error   errno: 3,
+17 error   code: 'EACCES',
+17 error   path: '/Users/nikhileshkatakam/.npm/e9b02655-requirejs.lock' }
+18 error Please try running this command again as root/Administrator.
+19 error System Darwin 11.4.2
+20 error command "node" "/usr/local/bin/npm" "install" "-g" "requirejs"
+21 error cwd /Users/nikhileshkatakam/octopress
+22 error node -v v0.10.3
+23 error npm -v 1.2.17
+24 error path /Users/nikhileshkatakam/.npm/e9b02655-requirejs.lock
+25 error code EACCES
+26 error errno 3
+27 error stack Error: EACCES, open '/Users/nikhileshkatakam/.npm/e9b02655-requirejs.lock'
+28 verbose exit [ 3, true ]
