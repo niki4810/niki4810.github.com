@@ -1,0 +1,70 @@
+/*
+Syntax error: Undefined variable: "$black".
+        on line 9 of /Users/nikhileshkatakam/octopress/sass/_type.scss
+        from line 26 of /Users/nikhileshkatakam/octopress/sass/style.scss
+
+Backtrace:
+/Users/nikhileshkatakam/octopress/sass/_type.scss:9
+/Users/nikhileshkatakam/octopress/sass/style.scss:26
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/sass-3.1.20/lib/sass/script/variable.rb:49:in `_perform'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/sass-3.1.20/lib/sass/script/node.rb:40:in `perform'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/sass-3.1.20/lib/sass/tree/visitors/perform.rb:216:in `visit_prop'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/sass-3.1.20/lib/sass/tree/visitors/base.rb:37:in `visit'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/sass-3.1.20/lib/sass/tree/visitors/perform.rb:18:in `visit'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/sass-3.1.20/lib/sass/tree/visitors/base.rb:53:in `block in visit_children'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/sass-3.1.20/lib/sass/tree/visitors/base.rb:53:in `map'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/sass-3.1.20/lib/sass/tree/visitors/base.rb:53:in `visit_children'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/sass-3.1.20/lib/sass/tree/visitors/perform.rb:27:in `block in visit_children'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/sass-3.1.20/lib/sass/tree/visitors/perform.rb:39:in `with_environment'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/sass-3.1.20/lib/sass/tree/visitors/perform.rb:26:in `visit_children'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/sass-3.1.20/lib/sass/tree/visitors/base.rb:37:in `block in visit'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/sass-3.1.20/lib/sass/tree/visitors/perform.rb:238:in `visit_rule'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/sass-3.1.20/lib/sass/tree/visitors/base.rb:37:in `visit'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/sass-3.1.20/lib/sass/tree/visitors/perform.rb:18:in `visit'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/sass-3.1.20/lib/sass/tree/visitors/perform.rb:146:in `block in visit_import'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/sass-3.1.20/lib/sass/tree/visitors/perform.rb:146:in `map'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/sass-3.1.20/lib/sass/tree/visitors/perform.rb:146:in `visit_import'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/sass-3.1.20/lib/sass/tree/visitors/base.rb:37:in `visit'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/sass-3.1.20/lib/sass/tree/visitors/perform.rb:18:in `visit'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/sass-3.1.20/lib/sass/tree/visitors/base.rb:53:in `block in visit_children'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/sass-3.1.20/lib/sass/tree/visitors/base.rb:53:in `map'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/sass-3.1.20/lib/sass/tree/visitors/base.rb:53:in `visit_children'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/sass-3.1.20/lib/sass/tree/visitors/perform.rb:27:in `block in visit_children'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/sass-3.1.20/lib/sass/tree/visitors/perform.rb:39:in `with_environment'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/sass-3.1.20/lib/sass/tree/visitors/perform.rb:26:in `visit_children'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/sass-3.1.20/lib/sass/tree/visitors/base.rb:37:in `block in visit'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/sass-3.1.20/lib/sass/tree/visitors/perform.rb:47:in `visit_root'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/sass-3.1.20/lib/sass/tree/visitors/base.rb:37:in `visit'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/sass-3.1.20/lib/sass/tree/visitors/perform.rb:18:in `visit'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/sass-3.1.20/lib/sass/tree/visitors/perform.rb:7:in `visit'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/sass-3.1.20/lib/sass/tree/root_node.rb:20:in `render'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/sass-3.1.20/lib/sass/engine.rb:300:in `_render'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/sass-3.1.20/lib/sass/engine.rb:247:in `render'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/compass-0.12.2/lib/compass/compiler.rb:140:in `block (2 levels) in compile'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/compass-0.12.2/lib/compass/compiler.rb:126:in `timed'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/compass-0.12.2/lib/compass/compiler.rb:139:in `block in compile'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/compass-0.12.2/lib/compass/logger.rb:45:in `red'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/compass-0.12.2/lib/compass/compiler.rb:138:in `compile'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/compass-0.12.2/lib/compass/compiler.rb:118:in `compile_if_required'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/compass-0.12.2/lib/compass/compiler.rb:103:in `block (2 levels) in run'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/compass-0.12.2/lib/compass/compiler.rb:101:in `each'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/compass-0.12.2/lib/compass/compiler.rb:101:in `block in run'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/compass-0.12.2/lib/compass/compiler.rb:126:in `timed'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/compass-0.12.2/lib/compass/compiler.rb:100:in `run'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/compass-0.12.2/lib/compass/commands/update_project.rb:45:in `perform'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/compass-0.12.2/lib/compass/commands/base.rb:18:in `execute'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/compass-0.12.2/lib/compass/commands/project_base.rb:19:in `execute'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/compass-0.12.2/lib/compass/exec/sub_command_ui.rb:43:in `perform!'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/compass-0.12.2/lib/compass/exec/sub_command_ui.rb:15:in `run!'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/compass-0.12.2/bin/compass:30:in `block in <top (required)>'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/compass-0.12.2/bin/compass:44:in `call'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/gems/compass-0.12.2/bin/compass:44:in `<top (required)>'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/bin/compass:19:in `load'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/bin/compass:19:in `<main>'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/bin/ruby_noexec_wrapper:14:in `eval'
+/Users/nikhileshkatakam/.rvm/gems/ruby-1.9.3-p385/bin/ruby_noexec_wrapper:14:in `<main>'
+*/
+body:before {
+  white-space: pre;
+  font-family: monospace;
+  content: "Syntax error: Undefined variable: \"$black\".\A         on line 9 of /Users/nikhileshkatakam/octopress/sass/_type.scss\A         from line 26 of /Users/nikhileshkatakam/octopress/sass/style.scss"; }
