@@ -3,7 +3,7 @@ layout: post
 title: "Unary plus operator shorthand for converting a string to a number in javascript"
 date: 2013-08-20 21:43
 comments: true
-categories: javascript, hacks
+categories: javascript hacks
 ---
 
 If you are a javascript developer like me, you must have come across a scenario where you needed to convert a string to a number. I have generally been using either `parseInt` or `parseFloat` for these type of conversions. <!-- more -->  
