@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Facebook | Octoblog]]></title>
+  <link href="http://niki4810.github.com/blog/categories/facebook/atom.xml" rel="self"/>
+  <link href="http://niki4810.github.com/"/>
+  <updated>2014-12-13T22:18:15-08:00</updated>
+  <id>http://niki4810.github.com/</id>
+  <author>
+    <name><![CDATA[Nikhilesh Katakam]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Communicating Between React Views]]></title>
+    <link href="http://niki4810.github.com/blog/2014/03/07/communicating-between-react-views/"/>
+    <updated>2014-03-07T20:40:00-08:00</updated>
+    <id>http://niki4810.github.com/blog/2014/03/07/communicating-between-react-views</id>
+    <content type="html"><![CDATA[<p>In my hunt to learn the next UI framework after Backbone, I came across <a href="http://facebook.github.io/react/index.html">React</a>. Its an open source javascript famework from Facebook, used for building modular user interfaces. As the project page says, most people use React as <code>V</code> in the <code>MVC</code> architecture.<!-- more --></p>
+
+<p>While the React project page has a ton of documentation and examples of what it is and what it can do, I could not find a good example on how two React views can communicate with each other.</p>
+
+<p>In this blog post, I would like to share my experience in building a simple example that looks like <a href="http://jsfiddle.net/niki4810/t8pDk/show/result/">this</a>.</p>
+
+<p>The application contains three views, <code>DisplayView</code>, <code>EditorView</code> (stateless) and the <code>ContainerView</code> (stateful). When we type something in the <code>Editorview</code> we see that the <code>DisplayView</code> gets updated automatically.</p>
+
+<h1>Step 1 : Constructing the DisplayView</h1>
+
+<p>The code for the Display view looks like this</p>
+
+<p>```javascript</p>
+
+<p>/<em>* @jsx React.DOM </em>/</p>
+
+<p>var DisplayView = React.createClass({</p>
+
+<pre><code>render : function(){
+    return (
+        &lt;div&gt;
+            &lt;span&gt;Name :&lt;/span&gt;
+            &lt;span&gt;{this.props.text}&lt;/span&gt;
+        &lt;/div&gt;
+    );
+}
+</code></pre>
+
+<p>});</p>
+
+<p><code>``
+We simply create a React view with a render function that returns a template. The interesting point to note here is the</code>{this.props.text}` in the second span.</p>
+
+<p>If we want to render this view as is, and append it to the body, we can simple use</p>
+
+<p>```javascript</p>
+
+<pre><code>//just a sample initialization, we will not be rendering DisplayView this way in our example
+React.renderComponent(&lt;DisplayView text="Bob"/&gt;, document.body);
+</code></pre>
+
+<p>```</p>
+
+<p>The above call with render the DisplayView and set the text in the second span as <code>Bob</code>. As you might have guessed, <code>this.props</code> refers to all the props that you send in the <code>&lt;DisplayView /&gt;</code> tag. The props could be string variables, or a callback functions.</p>
+
+<h1>Step2: Constructing the EditorView</h1>
+
+<p>The code for the Editor view looks like this</p>
+
+<p>```javascript</p>
+
+<p>var EditorView = React.createClass({</p>
+
+<pre><code>render : function(){
+    return (
+        &lt;div&gt;
+            &lt;span&gt;
+                Name :
+             &lt;/span&gt;
+            &lt;span&gt;
+                &lt;input type="text" 
+                   onChange={this.props.onChange}
+                   placeholder="type your name here..."/&gt;
+             &lt;/span&gt;
+        &lt;/div&gt;
+    );
+}
+</code></pre>
+
+<p>});</p>
+
+<p><code>``
+Similar to the</code>DisplayView<code>, we the render function returns a template. The template contains a label and a input component. The input has a onChange event listener which set to</code>this.props.onChange'. Which means that if we wanted to use the EditorView we would need to pass it as a prop. The call would look something like this.</p>
+
+<p>```javascript</p>
+
+<pre><code>//just a sample initialization, we will not be rendering EditorView this way in our example
+var foo = function(e){
+    console.log(e.target.value); //returns the value of the text input
+}
+React.renderComponent(&lt;EditorView onChange={foo}/&gt;, document.body);
+</code></pre>
+
+<p>```</p>
+
+<h1>Step3 : Constructing the ContainerView</h1>
+
+<p>The code for ContainerView looks like this</p>
+
+<p>```javascript</p>
+
+<pre><code>var ContainerView = React.createClass({
+getInitialState : function(){
+    return {text: ""}
+},
+handleChange : function(e){
+    var currentText = e.target.value;
+    this.setState({text : currentText});
+},
+render : function(){
+    var text = this.state.text;
+    return (  
+            &lt;div&gt;
+                &lt;EditorView onChange={this.handleChange}/&gt;
+                &lt;DisplayView text={text}/&gt;
+            &lt;/div&gt;    
+    );
+}
+</code></pre>
+
+<p>});</p>
+
+<p>//This will render the ContainerView and append it to the body
+React.renderComponent(<ContainerView />, document.body);
+```</p>
+
+<p>Based on the React's documentation on <a href="http://facebook.github.io/react/docs/interactivity-and-dynamic-uis.html#how-state-works">states</a>. A common patter that React suggests is to have multiple <code>stateless</code> views which take <code>props</code> from a single <code>stateful</code> view and re-render themselves.</p>
+
+<ul>
+<li>Both the <code>EditorView</code> and the <code>DisplayView</code> are state less, while the the <code>ContinerView</code> is stateful.</li>
+<li>The <code>getInitialState</code> returns an initial state object with a text property.</li>
+<li>The <code>render</code> function reads this text property from the state and supplies it to the DisplayView and sets a <code>onChange</code> handler on the EditorView.</li>
+<li>And finally the <code>handleChange</code> is the callback function for the <code>EditorView</code>'s <code>input</code> onChange event.</li>
+</ul>
+
+
+<p>Everytime <code>this.setState</code> is called, it leads to a call to the <code>render</code> function there by re-rendering all the sub views with in the ContainerView. This way, both the EditorView and the DisplayView are able to communicate with each other.</p>
+
+<h1>Does re-rendering cause a performance issue ?</h1>
+
+<p>React claims that this re-rendering is not expensive as it does not go against the tradational DOM, but rather an in memory virtual DOM, which does a diff on what's changed from the previous state and re-renders only those portions. Thus, giving a significant performance boost for your views. This is one of the selling points for React.</p>
+
+<p>Finally, the complete source code for this example can be found at the following <a href="http://jsfiddle.net/niki4810/t8pDk/">fiddle</a>. Hope this example helps you understand how your React views can talk to each other.</p>
+]]></content>
+  </entry>
+  
+</feed>

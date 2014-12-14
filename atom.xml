@@ -1,0 +1,1543 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Octoblog]]></title>
+  <link href="http://niki4810.github.com/atom.xml" rel="self"/>
+  <link href="http://niki4810.github.com/"/>
+  <updated>2014-12-13T22:18:15-08:00</updated>
+  <id>http://niki4810.github.com/</id>
+  <author>
+    <name><![CDATA[Nikhilesh Katakam]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Introducing gulp-devtools]]></title>
+    <link href="http://niki4810.github.com/blog/2014/12/13/introducing-gulp-devtools/"/>
+    <updated>2014-12-13T21:46:00-08:00</updated>
+    <id>http://niki4810.github.com/blog/2014/12/13/introducing-gulp-devtools</id>
+    <content type="html"><![CDATA[<p>Its been a while since my previous blog post and I am very happy to finally made some time to blog agian. Recently I have been playing a lot with <a href="https://developer.chrome.com/extensions/getstarted">chrome extension</a> development as its so much fun.<!-- more --></p>
+
+<p>Chrome provides a very easy and neat way to re-use your existing web development skills to write powerful extensions and apps. These app can be published onto the <a href="https://chrome.google.com/webstore/category/apps">chrome web store</a> and can be dowloaded onto any chrome browser.</p>
+
+<p>As a part of this learning process I happen to create my first chrome extension called <a href="http://niki4810.github.io/gulp-devtools/">gulp-devtools</a>.</p>
+
+<p>gulp-devtools, is simple chrome extension, that lets you run your gulp tasks from within your chrome browser via a UI. The below image shows a demo of gulp-devtools</p>
+
+<p><img src="https://raw.githubusercontent.com/niki4810/gulp-devtools/gh-pages/gulp-devtools-gif.gif" alt="alt tag" /></p>
+
+<p>Its provides some cool features to search through a list of all the gulp tasks in your project, start/stop a gulp task and run gulp tasks in the background (useful for tasks like watch).</p>
+
+<p>You can download the extension via the <a href="https://chrome.google.com/webstore/detail/gulp-devtools/ojpmgjhofceebfifeajnjojpokebkkji">chrome web store</a>. If you&#8217;d like to contribute to it on see the latest on this plugin development, you can checkout the <a href="https://github.com/niki4810/gulp-devtools">github repo</a>.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Communicating Between React Views]]></title>
+    <link href="http://niki4810.github.com/blog/2014/03/07/communicating-between-react-views/"/>
+    <updated>2014-03-07T20:40:00-08:00</updated>
+    <id>http://niki4810.github.com/blog/2014/03/07/communicating-between-react-views</id>
+    <content type="html"><![CDATA[<p>In my hunt to learn the next UI framework after Backbone, I came across <a href="http://facebook.github.io/react/index.html">React</a>. Its an open source javascript famework from Facebook, used for building modular user interfaces. As the project page says, most people use React as <code>V</code> in the <code>MVC</code> architecture.<!-- more --></p>
+
+<p>While the React project page has a ton of documentation and examples of what it is and what it can do, I could not find a good example on how two React views can communicate with each other.</p>
+
+<p>In this blog post, I would like to share my experience in building a simple example that looks like <a href="http://jsfiddle.net/niki4810/t8pDk/show/result/">this</a>.</p>
+
+<p>The application contains three views, <code>DisplayView</code>, <code>EditorView</code> (stateless) and the <code>ContainerView</code> (stateful). When we type something in the <code>Editorview</code> we see that the <code>DisplayView</code> gets updated automatically.</p>
+
+<h1>Step 1 : Constructing the DisplayView</h1>
+
+<p>The code for the Display view looks like this</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="cm">/** @jsx React.DOM */</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">DisplayView</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">createClass</span><span class="p">({</span>
+</span><span class='line'>    <span class="nx">render</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>        <span class="k">return</span> <span class="p">(</span>
+</span><span class='line'>            <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span><span class='line'>                <span class="o">&lt;</span><span class="nx">span</span><span class="o">&gt;</span><span class="nx">Name</span> <span class="o">:&lt;</span><span class="err">/span&gt;</span>
+</span><span class='line'>                <span class="o">&lt;</span><span class="nx">span</span><span class="o">&gt;</span><span class="p">{</span><span class="k">this</span><span class="p">.</span><span class="nx">props</span><span class="p">.</span><span class="nx">text</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/span&gt;</span>
+</span><span class='line'>            <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span><span class='line'>        <span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We simply create a React view with a render function that returns a template. The interesting point to note here is the <code>{this.props.text}</code> in the second span.</p>
+
+<p>If we want to render this view as is, and append it to the body, we can simple use</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">//just a sample initialization, we will not be rendering DisplayView this way in our example</span>
+</span><span class='line'><span class="nx">React</span><span class="p">.</span><span class="nx">renderComponent</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">DisplayView</span> <span class="nx">text</span><span class="o">=</span><span class="s2">&quot;Bob&quot;</span><span class="o">/&gt;</span><span class="p">,</span> <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The above call with render the DisplayView and set the text in the second span as <code>Bob</code>. As you might have guessed, <code>this.props</code> refers to all the props that you send in the <code>&lt;DisplayView /&gt;</code> tag. The props could be string variables, or a callback functions.</p>
+
+<h1>Step2: Constructing the EditorView</h1>
+
+<p>The code for the Editor view looks like this</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">EditorView</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">createClass</span><span class="p">({</span>
+</span><span class='line'>    <span class="nx">render</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>        <span class="k">return</span> <span class="p">(</span>
+</span><span class='line'>            <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span><span class='line'>                <span class="o">&lt;</span><span class="nx">span</span><span class="o">&gt;</span>
+</span><span class='line'>                    <span class="nx">Name</span> <span class="o">:</span>
+</span><span class='line'>                 <span class="o">&lt;</span><span class="err">/span&gt;</span>
+</span><span class='line'>                <span class="o">&lt;</span><span class="nx">span</span><span class="o">&gt;</span>
+</span><span class='line'>                    <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span>
+</span><span class='line'>                       <span class="nx">onChange</span><span class="o">=</span><span class="p">{</span><span class="k">this</span><span class="p">.</span><span class="nx">props</span><span class="p">.</span><span class="nx">onChange</span><span class="p">}</span>
+</span><span class='line'>                       <span class="nx">placeholder</span><span class="o">=</span><span class="s2">&quot;type your name here...&quot;</span><span class="o">/&gt;</span>
+</span><span class='line'>                 <span class="o">&lt;</span><span class="err">/span&gt;</span>
+</span><span class='line'>            <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span><span class='line'>        <span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>  
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Similar to the <code>DisplayView</code>, we the render function returns a template. The template contains a label and a input component. The input has a onChange event listener which set to `this.props.onChange&#8217;. Which means that if we wanted to use the EditorView we would need to pass it as a prop. The call would look something like this.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">//just a sample initialization, we will not be rendering EditorView this way in our example</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">foo</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">){</span>
+</span><span class='line'>  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span> <span class="c1">//returns the value of the text input</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nx">React</span><span class="p">.</span><span class="nx">renderComponent</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">EditorView</span> <span class="nx">onChange</span><span class="o">=</span><span class="p">{</span><span class="nx">foo</span><span class="p">}</span><span class="o">/&gt;</span><span class="p">,</span> <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>Step3 : Constructing the ContainerView</h1>
+
+<p>The code for ContainerView looks like this</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">ContainerView</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">createClass</span><span class="p">({</span>
+</span><span class='line'><span class="nx">getInitialState</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>    <span class="k">return</span> <span class="p">{</span><span class="nx">text</span><span class="o">:</span> <span class="s2">&quot;&quot;</span><span class="p">}</span>
+</span><span class='line'><span class="p">},</span>
+</span><span class='line'><span class="nx">handleChange</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">){</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">currentText</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">setState</span><span class="p">({</span><span class="nx">text</span> <span class="o">:</span> <span class="nx">currentText</span><span class="p">});</span>
+</span><span class='line'><span class="p">},</span>
+</span><span class='line'><span class="nx">render</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">text</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">state</span><span class="p">.</span><span class="nx">text</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">return</span> <span class="p">(</span>
+</span><span class='line'>            <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span><span class='line'>                <span class="o">&lt;</span><span class="nx">EditorView</span> <span class="nx">onChange</span><span class="o">=</span><span class="p">{</span><span class="k">this</span><span class="p">.</span><span class="nx">handleChange</span><span class="p">}</span><span class="o">/&gt;</span>
+</span><span class='line'>                <span class="o">&lt;</span><span class="nx">DisplayView</span> <span class="nx">text</span><span class="o">=</span><span class="p">{</span><span class="nx">text</span><span class="p">}</span><span class="o">/&gt;</span>
+</span><span class='line'>            <span class="o">&lt;</span><span class="err">/div&gt;    </span>
+</span><span class='line'>    <span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//This will render the ContainerView and append it to the body </span>
+</span><span class='line'><span class="nx">React</span><span class="p">.</span><span class="nx">renderComponent</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">ContainerView</span> <span class="o">/&gt;</span><span class="p">,</span> <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Based on the React&#8217;s documentation on <a href="http://facebook.github.io/react/docs/interactivity-and-dynamic-uis.html#how-state-works">states</a>. A common patter that React suggests is to have multiple <code>stateless</code> views which take <code>props</code> from a single <code>stateful</code> view and re-render themselves.</p>
+
+<ul>
+<li>Both the <code>EditorView</code> and the <code>DisplayView</code> are state less, while the the <code>ContinerView</code> is stateful.</li>
+<li>The <code>getInitialState</code> returns an initial state object with a text property.</li>
+<li>The <code>render</code> function reads this text property from the state and supplies it to the DisplayView and sets a <code>onChange</code> handler on the EditorView.</li>
+<li>And finally the <code>handleChange</code> is the callback function for the <code>EditorView</code>&#8217;s <code>input</code> onChange event.</li>
+</ul>
+
+
+<p>Everytime <code>this.setState</code> is called, it leads to a call to the <code>render</code> function there by re-rendering all the sub views with in the ContainerView. This way, both the EditorView and the DisplayView are able to communicate with each other.</p>
+
+<h1>Does re-rendering cause a performance issue ?</h1>
+
+<p>React claims that this re-rendering is not expensive as it does not go against the tradational DOM, but rather an in memory virtual DOM, which does a diff on what&#8217;s changed from the previous state and re-renders only those portions. Thus, giving a significant performance boost for your views. This is one of the selling points for React.</p>
+
+<p>Finally, the complete source code for this example can be found at the following <a href="http://jsfiddle.net/niki4810/t8pDk/">fiddle</a>. Hope this example helps you understand how your React views can talk to each other.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Unary plus operator shorthand for converting a string to a number in javascript]]></title>
+    <link href="http://niki4810.github.com/blog/2013/08/20/unary-plus-operator-shorthand-for-converting-string-to-number-in-javascript/"/>
+    <updated>2013-08-20T21:43:00-07:00</updated>
+    <id>http://niki4810.github.com/blog/2013/08/20/unary-plus-operator-shorthand-for-converting-string-to-number-in-javascript</id>
+    <content type="html"><![CDATA[<p>If you are a javascript developer like me, you must have come across a scenario where you needed to convert a string to a number. I have generally been using either <code>parseInt</code> or <code>parseFloat</code> for these type of conversions. <!-- more --></p>
+
+<p>For example, you would do something like this for the conversion</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'>  <span class="kd">var</span> <span class="nx">num</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="p">(</span><span class="s2">&quot;10&quot;</span><span class="p">);</span>
+</span><span class='line'> <span class="c1">// output : num = 10;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'>   <span class="kd">var</span> <span class="nx">num</span> <span class="o">=</span> <span class="nb">parseFloat</span><span class="p">(</span><span class="s2">&quot;10.23&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="c1">// output: num = 10.23</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Most recently I have come across another interesting way to do the same conversion, i.e. using the <code>unary plus</code> operator ( <code>+</code> ). The above two statements can be rewritten as following to achieve the same result</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">num</span> <span class="o">=</span> <span class="o">+</span><span class="s2">&quot;10&quot;</span>
+</span><span class='line'><span class="c1">// output : num = 10;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'>   <span class="kd">var</span> <span class="nx">num</span> <span class="o">=</span>  <span class="o">+</span><span class="s2">&quot;10.23&quot;</span>
+</span><span class='line'>  <span class="c1">// output: num = 10.23</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Although choosing one style of conversion might be a personal opinion, I think that converting using the unary plus operator would act as a great shorthand, especially while writing unit test for you javascript code.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Building Modular apps using Backbone and Geppetto]]></title>
+    <link href="http://niki4810.github.com/blog/2013/05/26/building-modular-apps-using-backbone-and-geppetto/"/>
+    <updated>2013-05-26T11:06:00-07:00</updated>
+    <id>http://niki4810.github.com/blog/2013/05/26/building-modular-apps-using-backbone-and-geppetto</id>
+    <content type="html"><![CDATA[<p>When building large multi-modular apps, embedding business logic within your Backbone views or models does not scale well.  Ideally you would want to de-couple your business logic from the view logic. Solving this problem becomes really easy using <code>Geppetto</code>.<!-- more --></p>
+
+<h1>Prerequisites</h1>
+
+<p>To better understand the example in this blog post, it is important to have a good knowledge on the following frameworks:</p>
+
+<ul>
+<li>Backbone &amp; Marionette</li>
+<li>Backbone ModelBinder
+
+<ul>
+<li>Please refer to my previous <a href="http://niki4810.github.io/blog/2013/03/02/new-post/">post</a> on Backbone ModelBinder</li>
+</ul>
+</li>
+<li>RequireJS
+
+<ul>
+<li><code>Cary Landholt</code> has a really good <a href="http://www.youtube.com/watch?v=VGlDR1QiV3A">screen cast</a> on requireJs</li>
+</ul>
+</li>
+</ul>
+
+
+<h1>Experience the application first</h1>
+
+<p>We will be building a simple movie search app. We make use of the <a href="http://developer.rottentomatoes.com/">rotten tomatoes developer api</a> for fetching the movie details.
+Here is the direct link to the application: <a href="http://niki4810.github.io/annotate-sources/Communicating-Via-Geppetto/index.html?">link</a></p>
+
+<h1>Some more information on the application</h1>
+
+<p>The application we are building is a simple search page with <code>three</code> views. A <code>search view</code> on the left for searching a movie, a <code>result view</code> on the right for displaying the search result and a <code>container view</code> which holds the search and the result views.</p>
+
+<h1>What functionality does each view provide?</h1>
+
+<p>Lets list out the functionality that each view is expected to provide.</p>
+
+<ul>
+<li><p>Search View</p>
+
+<ul>
+<li>Should accept the movie title as users input.</li>
+<li>Should  shout out the movie title using an event when the search button is clicked.</li>
+</ul>
+</li>
+<li><p>Result View</p>
+
+<ul>
+<li>Should keep listening for data.</li>
+<li>Display the data to the user whenever it gets it.</li>
+</ul>
+</li>
+<li><p>Container View</p>
+
+<ul>
+<li>Acts as a dumb container that holds the search and the result view.</li>
+</ul>
+</li>
+</ul>
+
+
+<h1>Lets create the view&#8217;s first</h1>
+
+<p>Here are the code snippets for each view</p>
+
+<h3>Search View</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">//search view</span>
+</span><span class='line'><span class="nx">define</span><span class="p">(</span>
+</span><span class='line'>  <span class="p">[</span>
+</span><span class='line'>  <span class="s2">&quot;jquery&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s2">&quot;underscore&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s2">&quot;backbone&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s2">&quot;marionette&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s2">&quot;geppetto&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s2">&quot;text!src/templates/SearchViewTemplate.html&quot;</span>
+</span><span class='line'>  <span class="p">],</span><span class="kd">function</span><span class="p">(</span>
+</span><span class='line'>      <span class="nx">$</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">_</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">Backbone</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">Marionette</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">Geppetto</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">SearchViewTemplate</span>
+</span><span class='line'>  <span class="p">){</span>
+</span><span class='line'>  
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">SearchView</span> <span class="o">=</span> <span class="nx">Marionette</span><span class="p">.</span><span class="nx">ItemView</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+</span><span class='line'>      <span class="nx">template</span> <span class="o">:</span> <span class="nx">SearchViewTemplate</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">className</span> <span class="o">:</span> <span class="s2">&quot;well span4&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">bindings</span> <span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>              <span class="s2">&quot;title&quot;</span> <span class="o">:</span> <span class="s1">&#39;[name = &quot;title&quot;]&#39;</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="nx">events</span> <span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>          <span class="s2">&quot;click button.searchBtn&quot;</span> <span class="o">:</span> <span class="s2">&quot;searchClicked&quot;</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="nx">searchClicked</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="k">if</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">)){</span>
+</span><span class='line'>          <span class="k">this</span><span class="p">.</span><span class="nx">context</span><span class="p">.</span><span class="nx">dispatch</span><span class="p">(</span><span class="s2">&quot;performSearchEvent&quot;</span><span class="cm">/*event name*/</span><span class="p">,{</span><span class="nx">data</span><span class="o">:</span><span class="k">this</span><span class="p">.</span><span class="nx">model</span><span class="p">}</span><span class="cm">/*event payload*/</span><span class="p">);</span>
+</span><span class='line'>          <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span><span class='line'>              <span class="c1">//if title is not set, shake the text input</span>
+</span><span class='line'>              <span class="c1">//should have a required validator, but this would work</span>
+</span><span class='line'>              <span class="k">this</span><span class="p">.</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;[name = &quot;title&quot;]&#39;</span><span class="p">).</span><span class="nx">removeClass</span><span class="p">().</span><span class="nx">addClass</span><span class="p">(</span><span class="s1">&#39;animated shake&#39;</span><span class="p">);</span>
+</span><span class='line'>                <span class="kd">var</span> <span class="nx">that</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+</span><span class='line'>              <span class="kd">var</span> <span class="nx">wait</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>                  <span class="nx">that</span><span class="p">.</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;[name = &quot;title&quot;]&#39;</span><span class="p">).</span><span class="nx">removeClass</span><span class="p">()</span>
+</span><span class='line'>              <span class="p">},</span> <span class="mi">1300</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="c1">//local variable for model binder</span>
+</span><span class='line'>      <span class="nx">_modelBinder</span> <span class="o">:</span> <span class="kc">undefined</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">initialize</span> <span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>           <span class="nx">_</span><span class="p">.</span><span class="nx">bindAll</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+</span><span class='line'>          <span class="c1">//on view initialize, initialize _modelBinder</span>
+</span><span class='line'>          <span class="k">this</span><span class="p">.</span><span class="nx">_modelBinder</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">ModelBinder</span><span class="p">();</span>
+</span><span class='line'>          <span class="c1">//save the passed in context locally  such that</span>
+</span><span class='line'>          <span class="c1">// we can dispatch or listen to events on this context</span>
+</span><span class='line'>          <span class="k">this</span><span class="p">.</span><span class="nx">context</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">context</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="nx">close</span> <span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>          <span class="c1">//when view closes, unbind Model bindings</span>
+</span><span class='line'>          <span class="k">this</span><span class="p">.</span><span class="nx">_modelBinder</span><span class="p">.</span><span class="nx">unbind</span><span class="p">();</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="nx">onRender</span> <span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>            
+</span><span class='line'>          <span class="k">this</span><span class="p">.</span><span class="nx">_modelBinder</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">model</span><span class="cm">/*the model to bind*/</span><span class="p">,</span>
+</span><span class='line'>                                 <span class="k">this</span><span class="p">.</span><span class="nx">el</span><span class="cm">/*root element*/</span><span class="p">,</span>
+</span><span class='line'>                                 <span class="k">this</span><span class="p">.</span><span class="nx">bindings</span> <span class="cm">/*bindings*/</span> <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">SearchView</span><span class="p">;</span>
+</span><span class='line'><span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Result View</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">//result view</span>
+</span><span class='line'><span class="nx">define</span><span class="p">([</span>
+</span><span class='line'>  <span class="s2">&quot;jquery&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s2">&quot;underscore&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s2">&quot;backbone&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s2">&quot;marionette&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s2">&quot;geppetto&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s2">&quot;text!src/templates/ResultViewTemplate.html&quot;</span>
+</span><span class='line'>  <span class="p">],</span>
+</span><span class='line'> <span class="kd">function</span><span class="p">(</span>
+</span><span class='line'>  <span class="nx">$</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">_</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">Backbone</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">Marionette</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">Geppetto</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">ResultViewTemplate</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">ResultView</span> <span class="o">=</span> <span class="nx">Marionette</span><span class="p">.</span><span class="nx">ItemView</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+</span><span class='line'>      <span class="nx">template</span><span class="o">:</span> <span class="nx">ResultViewTemplate</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">className</span> <span class="o">:</span> <span class="s2">&quot;well span6 clearfix&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">bindings</span> <span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>              <span class="s2">&quot;title&quot;</span> <span class="o">:</span> <span class="s1">&#39;[name = &quot;title&quot;]&#39;</span><span class="p">,</span>
+</span><span class='line'>              <span class="s2">&quot;year&quot;</span> <span class="o">:</span> <span class="s1">&#39;[name = &quot;year&quot;]&#39;</span><span class="p">,</span>
+</span><span class='line'>              <span class="s2">&quot;rated&quot;</span> <span class="o">:</span> <span class="s1">&#39;[name = &quot;rated&quot;]&#39;</span><span class="p">,</span>
+</span><span class='line'>              <span class="s2">&quot;rating&quot;</span> <span class="o">:</span><span class="s1">&#39;[name =&quot;rating&quot;]&#39;</span><span class="p">,</span>
+</span><span class='line'>              <span class="s2">&quot;poster&quot;</span> <span class="o">:</span><span class="p">{</span><span class="nx">selector</span><span class="o">:</span> <span class="s1">&#39;[name=poster]&#39;</span><span class="p">,</span>  <span class="nx">elAttribute</span><span class="o">:</span> <span class="s1">&#39;src&#39;</span><span class="p">}</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="nx">initialize</span> <span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nx">_</span><span class="p">.</span><span class="nx">bindAll</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+</span><span class='line'>              <span class="c1">//on view initialize, initialize _modelBinder</span>
+</span><span class='line'>          <span class="k">this</span><span class="p">.</span><span class="nx">_modelBinder</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">ModelBinder</span><span class="p">();</span>
+</span><span class='line'>          <span class="c1">//save the passed in context locally  such that</span>
+</span><span class='line'>          <span class="c1">// we can dispatch or listen to events on this context</span>
+</span><span class='line'>          <span class="k">this</span><span class="p">.</span><span class="nx">context</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">context</span><span class="p">;</span>
+</span><span class='line'>          <span class="k">this</span><span class="p">.</span><span class="nx">context</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="s2">&quot;loadResultsSuccessEvent&quot;</span><span class="cm">/*event name*/</span><span class="p">,</span>
+</span><span class='line'>                              <span class="k">this</span><span class="p">.</span><span class="nx">handleSearchResultsLoaded</span><span class="cm">/*event listener*/</span><span class="p">);</span>
+</span><span class='line'>          <span class="k">this</span><span class="p">.</span><span class="nx">context</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="s2">&quot;loadResultsErrorEvent&quot;</span><span class="cm">/*event name*/</span><span class="p">,</span>
+</span><span class='line'>                              <span class="k">this</span><span class="p">.</span><span class="nx">handleSearchResultsLoadError</span><span class="cm">/*event listener*/</span><span class="p">);</span>
+</span><span class='line'>      <span class="p">},</span>       
+</span><span class='line'>      <span class="nx">close</span> <span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>          <span class="c1">//when view closes, unbind Model bindings</span>
+</span><span class='line'>          <span class="k">this</span><span class="p">.</span><span class="nx">_modelBinder</span><span class="p">.</span><span class="nx">unbind</span><span class="p">();</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="nx">onRender</span> <span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>          
+</span><span class='line'>          <span class="k">this</span><span class="p">.</span><span class="nx">_modelBinder</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">model</span><span class="cm">/*the model to bind*/</span><span class="p">,</span>
+</span><span class='line'>                                 <span class="k">this</span><span class="p">.</span><span class="nx">el</span><span class="cm">/*root element*/</span><span class="p">,</span>
+</span><span class='line'>                                 <span class="k">this</span><span class="p">.</span><span class="nx">bindings</span> <span class="cm">/*bindings*/</span> <span class="p">);</span>
+</span><span class='line'>                              
+</span><span class='line'>                      
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="nx">handleSearchResultsLoaded</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">){</span>
+</span><span class='line'>          <span class="k">this</span><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">clear</span><span class="p">();</span>
+</span><span class='line'>          <span class="k">this</span><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="nx">handleSearchResultsLoadError</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>          <span class="k">this</span><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">clear</span><span class="p">();</span>
+</span><span class='line'>          <span class="nx">alert</span><span class="p">(</span><span class="s1">&#39;Opps...something went wrong, try searching again&#39;</span><span class="p">);</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">ResultView</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Container View</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">//container view</span>
+</span><span class='line'><span class="nx">define</span><span class="p">([</span>
+</span><span class='line'>  <span class="s2">&quot;jquery&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s2">&quot;underscore&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s2">&quot;backbone&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s2">&quot;marionette&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s2">&quot;geppetto&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s2">&quot;src/controller/ApplicationContext&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s2">&quot;text!src/templates/ContainerTemplate.html&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s2">&quot;src/views/SearchView&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s2">&quot;src/views/ResultView&quot;</span><span class="p">],</span>
+</span><span class='line'>  <span class="kd">function</span><span class="p">(</span>
+</span><span class='line'>      <span class="nx">$</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">_</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">Backbone</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">Marionette</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">Geppetto</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">ApplicationContext</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">ContainerTemplate</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">SearchView</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">ResultView</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//container view acts as plain layout view</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">ContainerView</span> <span class="o">=</span> <span class="nx">Marionette</span><span class="p">.</span><span class="nx">ItemView</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+</span><span class='line'>      <span class="c1">//set template</span>
+</span><span class='line'>      <span class="nx">template</span> <span class="o">:</span> <span class="nx">ContainerTemplate</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">className</span> <span class="o">:</span> <span class="s2">&quot;container myContainer&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">initialize</span> <span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>           <span class="nx">_</span><span class="p">.</span><span class="nx">bindAll</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+</span><span class='line'>          <span class="c1">//create a Geppetto context</span>
+</span><span class='line'>          <span class="nx">Geppetto</span><span class="p">.</span><span class="nx">bindContext</span><span class="p">({</span>
+</span><span class='line'>              <span class="nx">view</span> <span class="o">:</span> <span class="k">this</span><span class="p">,</span>
+</span><span class='line'>              <span class="nx">context</span> <span class="o">:</span> <span class="nx">ApplicationContext</span>
+</span><span class='line'>          <span class="p">});</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="nx">onRender</span> <span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>          <span class="c1">//when view is container view is rendered</span>
+</span><span class='line'>          <span class="c1">//construct the search view</span>
+</span><span class='line'>          <span class="k">this</span><span class="p">.</span><span class="nx">constructSearchView</span><span class="p">();</span>
+</span><span class='line'>          <span class="c1">//construct the result view</span>
+</span><span class='line'>          <span class="k">this</span><span class="p">.</span><span class="nx">constructResultView</span><span class="p">();</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="nx">constructSearchView</span> <span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>          <span class="c1">//instantiate an search view</span>
+</span><span class='line'>          <span class="c1">//notice that we are passig the context from the</span>
+</span><span class='line'>          <span class="c1">//current container view to the search view constructor</span>
+</span><span class='line'>          <span class="kd">var</span> <span class="nx">mySearchView</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">SearchView</span><span class="p">({</span>
+</span><span class='line'>              <span class="nx">context</span> <span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">context</span><span class="p">,</span>
+</span><span class='line'>              <span class="nx">model</span> <span class="o">:</span> <span class="k">new</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Model</span><span class="p">()</span>
+</span><span class='line'>          <span class="p">});</span>
+</span><span class='line'>          <span class="c1">//render the view</span>
+</span><span class='line'>          <span class="nx">mySearchView</span><span class="p">.</span><span class="nx">render</span><span class="p">();</span>
+</span><span class='line'>          <span class="c1">//append it the current container</span>
+</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="nx">$el</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">mySearchView</span><span class="p">.</span><span class="nx">$el</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="nx">constructResultView</span> <span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>          <span class="c1">//instantiate an result view</span>
+</span><span class='line'>          <span class="c1">//notice that we are passig the context from the</span>
+</span><span class='line'>          <span class="c1">//current container view to the result view constructor</span>
+</span><span class='line'>          <span class="kd">var</span> <span class="nx">myResultView</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ResultView</span><span class="p">({</span>
+</span><span class='line'>              <span class="nx">context</span> <span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">context</span><span class="p">,</span>
+</span><span class='line'>              <span class="nx">model</span> <span class="o">:</span> <span class="k">new</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Model</span><span class="p">()</span>
+</span><span class='line'>          <span class="p">});</span>
+</span><span class='line'>          <span class="c1">//render the view</span>
+</span><span class='line'>            <span class="nx">myResultView</span><span class="p">.</span><span class="nx">render</span><span class="p">()</span>
+</span><span class='line'>          <span class="c1">//append it the current container</span>
+</span><span class='line'>          <span class="k">this</span><span class="p">.</span><span class="nx">$el</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">myResultView</span><span class="p">.</span><span class="nx">$el</span><span class="p">);</span>
+</span><span class='line'>          
+</span><span class='line'>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">ContainerView</span><span class="p">;</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>So, who is actually fetching the data ?</h1>
+
+<p>By looking at the code above, none of the views hold the business logic to fetch the data from the serve. The <code>search view</code> simply dispatches a <code>performSearchEvent</code> with the movie title as payload. The <code>result view</code> keeps listening for <code>loadResultsSuccessEvent</code> or <code>loadResultsErrorEvent</code> for displaying the data or error message &amp; the <code>container view</code> simply creates these two views.</p>
+
+<p>So who is actually querying the server ? Well, with <code>Geppetto</code>, you could define commands that lets you handle all the complex business logic.</p>
+
+<p>The code snippet below shows the command for our example. The commands have an <code>execute</code> function which gets called when an event tied to the command is triggered.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">//Search Movies Command</span>
+</span><span class='line'><span class="nx">define</span><span class="p">([</span><span class="s2">&quot;jquery&quot;</span><span class="p">,</span> <span class="s2">&quot;underscore&quot;</span><span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">$</span><span class="p">,</span> <span class="nx">_</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">command</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">command</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">execute</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">_</span><span class="p">.</span><span class="nx">bindAll</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">that</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">apikey</span> <span class="o">=</span> <span class="s2">&quot;78ejsdd76tc6jsffmrxjddxu&quot;</span><span class="p">;</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">baseUrl</span> <span class="o">=</span> <span class="s2">&quot;http://api.rottentomatoes.com/api/public/v1.0&quot;</span><span class="p">;</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">moviesSearchUrl</span> <span class="o">=</span> <span class="nx">baseUrl</span> <span class="o">+</span> <span class="s1">&#39;/movies.json?apikey=&#39;</span> <span class="o">+</span> <span class="nx">apikey</span><span class="p">;</span>
+</span><span class='line'>      <span class="c1">//get the movie title</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">query</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">eventData</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">);</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">pageLimit</span> <span class="o">=</span> <span class="s2">&quot;&amp;page_limit=1&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1">//make an plain jquery ajax call to fetch the movie details using the</span>
+</span><span class='line'>      <span class="c1">//rotten tomatoes public api&#39;s</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">({</span>
+</span><span class='line'>          <span class="nx">url</span> <span class="o">:</span> <span class="nx">moviesSearchUrl</span> <span class="o">+</span> <span class="s1">&#39;&amp;q=&#39;</span> <span class="o">+</span> <span class="nb">encodeURI</span><span class="p">(</span><span class="nx">query</span><span class="p">)</span> <span class="o">+</span> <span class="nx">pageLimit</span><span class="p">,</span>
+</span><span class='line'>          <span class="nx">dataType</span> <span class="o">:</span> <span class="s2">&quot;jsonp&quot;</span><span class="p">,</span>
+</span><span class='line'>          <span class="nx">success</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>              <span class="nx">that</span><span class="p">.</span><span class="nx">handleDataLoadSuccess</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+</span><span class='line'>          <span class="p">},</span>
+</span><span class='line'>          <span class="nx">statusCode</span> <span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>              <span class="mi">503</span> <span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>                  <span class="nx">that</span><span class="p">.</span><span class="nx">handleDataLoadError</span><span class="p">(</span><span class="s2">&quot;page not found&quot;</span><span class="p">);</span>
+</span><span class='line'>              <span class="p">}</span>
+</span><span class='line'>          <span class="p">},</span>
+</span><span class='line'>          <span class="nx">error</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">jqXHR</span><span class="p">,</span> <span class="nx">textStatus</span><span class="p">,</span> <span class="nx">errorThrown</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>              <span class="nx">that</span><span class="p">.</span><span class="nx">handleDataLoadError</span><span class="p">(</span><span class="nx">errorThrown</span><span class="p">);</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">command</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">handleDataLoadSuccess</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">movies</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">movies</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">data</span> <span class="o">||</span> <span class="o">!</span><span class="nx">data</span><span class="p">.</span><span class="nx">movies</span> <span class="o">||</span> <span class="nx">data</span><span class="p">.</span><span class="nx">movies</span><span class="p">.</span><span class="nx">length</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="c1">//when there are no movies dispatch an error event</span>
+</span><span class='line'>          <span class="k">this</span><span class="p">.</span><span class="nx">context</span><span class="p">.</span><span class="nx">dispatch</span><span class="p">(</span><span class="s2">&quot;loadResultsErrorEvent&quot;</span><span class="cm">/*event name*/</span><span class="p">);</span>
+</span><span class='line'>      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>          <span class="c1">//when we get the movies results</span>
+</span><span class='line'>          <span class="c1">//construct an object with movie details</span>
+</span><span class='line'>          <span class="kd">var</span> <span class="nx">resultObj</span> <span class="o">=</span> <span class="p">{};</span>
+</span><span class='line'>          <span class="nx">resultObj</span><span class="p">.</span><span class="nx">rated</span> <span class="o">=</span> <span class="nx">movies</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">mpaa_rating</span><span class="p">;</span>
+</span><span class='line'>          <span class="nx">resultObj</span><span class="p">.</span><span class="nx">title</span> <span class="o">=</span> <span class="nx">movies</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">title</span><span class="p">;</span>
+</span><span class='line'>          <span class="nx">resultObj</span><span class="p">.</span><span class="nx">rating</span> <span class="o">=</span> <span class="nx">movies</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">ratings</span><span class="p">.</span><span class="nx">audience_score</span><span class="p">;</span>
+</span><span class='line'>          <span class="nx">resultObj</span><span class="p">.</span><span class="nx">year</span> <span class="o">=</span> <span class="nx">movies</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">year</span><span class="p">;</span>
+</span><span class='line'>          <span class="nx">resultObj</span><span class="p">.</span><span class="nx">poster</span> <span class="o">=</span> <span class="nx">movies</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">posters</span><span class="p">.</span><span class="nx">original</span><span class="p">;</span>
+</span><span class='line'>          <span class="c1">//dispatch an event on the context with movie details as payload</span>
+</span><span class='line'>          <span class="k">this</span><span class="p">.</span><span class="nx">context</span><span class="p">.</span><span class="nx">dispatch</span><span class="p">(</span><span class="s2">&quot;loadResultsSuccessEvent&quot;</span><span class="cm">/*event name*/</span><span class="p">,</span> <span class="nx">resultObj</span><span class="p">);</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">command</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">handleDataLoadError</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="c1">//when there are no movies dispatch an error event</span>
+</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="nx">context</span><span class="p">.</span><span class="nx">dispatch</span><span class="p">(</span><span class="s2">&quot;loadResultsErrorEvent&quot;</span><span class="cm">/*event name*/</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">command</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>How does this command get called?</h1>
+
+<p><code>Geppetto</code> controller/context facilitate&#8217;s the mappings between events and command. In our case whenever a <code>performSearchEvent</code> is dispatch the context/controller maps it to the <code>SearchMoviesCommand</code> and supplies the <code>eventData</code> as payload to the command.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">//application context or controller</span>
+</span><span class='line'><span class="nx">define</span><span class="p">([</span>
+</span><span class='line'>  <span class="s1">&#39;backbone&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;geppetto&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;src/commands/SearchMoviesCommand&#39;</span><span class="p">],</span>
+</span><span class='line'><span class="kd">function</span><span class="p">(</span>
+</span><span class='line'>  <span class="nx">Backbone</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">Geppetto</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">SearchMoviesCommand</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//return a geppetto context</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">Geppetto</span><span class="p">.</span><span class="nx">Context</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+</span><span class='line'>      <span class="c1">//setup an initialize function</span>
+</span><span class='line'>      <span class="nx">initialize</span> <span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>          <span class="c1">// map commands </span>
+</span><span class='line'>          <span class="c1">//when ever a &quot;performSearchEvent&quot; is dispatch on this command</span>
+</span><span class='line'>          <span class="c1">//the context delegates that call to the SearchMoviesCommand</span>
+</span><span class='line'>          <span class="k">this</span><span class="p">.</span><span class="nx">mapCommand</span><span class="p">(</span> <span class="s2">&quot;performSearchEvent&quot;</span><span class="cm">/*event name*/</span><span class="p">,</span> <span class="nx">SearchMoviesCommand</span> <span class="p">);</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If we look at the initialize function in container view, we create a context using the bindContext function.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">...</span>
+</span><span class='line'><span class="nx">Geppetto</span><span class="p">.</span><span class="nx">bindContext</span><span class="p">({</span>
+</span><span class='line'>  <span class="nx">view</span> <span class="o">:</span> <span class="k">this</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">context</span> <span class="o">:</span> <span class="nx">ApplicationContext</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'><span class="p">...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We then pass this context into search and result view constructors. Using context, communicating between view becomes really easy. Each view that shares a common context can dispatch and listen to events on the context.</p>
+
+<h1>So what&#8217;s the benefit of Geppetto</h1>
+
+<p>By now, its should be clear as to what advantage Geppetto brings to your Backbone apps. Here is a list of them:</p>
+
+<ul>
+<li>Currently we use the rotten tomatoes api&#8217;s for searching movies. If we want to use a different service provider, all we need to do is modify the logic in the command. Our views remain untouched</li>
+<li>The same logic goes for the views as well, if we want to change the view layout, the business logic remains untouched.</li>
+<li>Since there is a clear separation of concern and de-coupling between our views and command, writing test cases would be really easy.</li>
+</ul>
+
+
+<h1>Where can I find the complete source code for this example?</h1>
+
+<p>The complete source code for this example can be found at the following repo <a href="https://github.com/niki4810/Developing-Modular-Apps-With-Geppetto">link</a></p>
+
+<p>Here is a direct link for the <a href="https://github.com/niki4810/Developing-Modular-Apps-With-Geppetto/archive/master.zip">zip file</a></p>
+
+<h1>Credits</h1>
+
+<ul>
+<li><a href="http://modeln.github.io/backbone.geppetto/">Geppetto&#8217;s</a> project page has detailed documentation on all of its features, please refer to it for further details.</li>
+<li>Special thanks to <a href="https://github.com/geekdave">David Cadwallader</a> for building such a elegant framework.</li>
+<li>The example make uses of the <a href="http://developer.rottentomatoes.com/">rotten tomatoes developer api</a> for fetching the movie details.</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Databinding using Backbone Stickit]]></title>
+    <link href="http://niki4810.github.com/blog/2013/05/04/databinding-using-backbone-stickit/"/>
+    <updated>2013-05-04T10:56:00-07:00</updated>
+    <id>http://niki4810.github.com/blog/2013/05/04/databinding-using-backbone-stickit</id>
+    <content type="html"><![CDATA[<p>In my previous <a href="http://niki4810.github.io/blog/2013/03/02/new-post/">post</a> we looked at setting up data-bindings between our backbone views and models using the <code>Backbone.Modelbinder</code> plugin. In this post, I will demonstrate another viable alternative for data-binding called <code>Backbone.Stickit</code>.<!-- more --></p>
+
+<h1>How can we achieve data-binding using <code>Backbone.Stickit</code>?</h1>
+
+<p>To illustrate this we will build the same application as we did in the previous <a href="http://niki4810.github.io/blog/2013/03/02/new-post/">post</a>. The only difference is that the example in this post uses <code>Backbone.Stickit</code> for <code>data-binding</code>.</p>
+
+<ul>
+<li>The annotated source code for this example can be found at the following <a href="http://niki4810.github.io/annotate-sources/databinding-using-stickit.html">link</a></li>
+<li>The complete fiddle can be found at the following <a href="http://jsfiddle.net/niki4810/yQjPD/">link</a></li>
+<li>A full screen preview of this application can be found at the following <a href="http://jsfiddle.net/niki4810/yQjPD/embedded/result/">link</a></li>
+</ul>
+
+
+<p>Surprisingly, the changes I had to make in order to convert my previous example to use Backbone.Stickit were pretty minimal.  To start off the bindings maps for the <code>editor</code> and the <code>preview</code> views are as follows.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">editorViewBindings</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>      <span class="s1">&#39;[name = &quot;firstName&quot;]&#39;</span> <span class="o">:</span> <span class="s2">&quot;firstName&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;[name = &quot;lastName&quot;]&#39;</span> <span class="o">:</span> <span class="s2">&quot;lastName&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;[name = &quot;salary&quot;]&#39;</span><span class="o">:</span><span class="p">{</span>
+</span><span class='line'>          <span class="nx">observe</span><span class="o">:</span> <span class="s1">&#39;salary&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="nx">onGet</span><span class="o">:</span> <span class="s1">&#39;salaryConverter&#39;</span>
+</span><span class='line'>          <span class="p">}</span> <span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;[name = &quot;pro&quot;]&#39;</span> <span class="o">:</span> <span class="s2">&quot;pro&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;[name = &quot;favSearch&quot;]&#39;</span><span class="o">:</span> <span class="s2">&quot;favSearch&quot;</span>
+</span><span class='line'>      <span class="p">};</span>
+</span><span class='line'>      
+</span><span class='line'><span class="kd">var</span> <span class="nx">viewerBindings</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>                  <span class="s1">&#39;[name = &quot;firstName&quot;]&#39;</span> <span class="o">:</span> <span class="s2">&quot;firstName&quot;</span><span class="p">,</span>
+</span><span class='line'>                  <span class="s1">&#39;[name = &quot;lastName&quot;]&#39;</span> <span class="o">:</span> <span class="s2">&quot;lastName&quot;</span><span class="p">,</span>
+</span><span class='line'>                  <span class="s1">&#39;[name = &quot;salary&quot;]&#39;</span><span class="o">:</span><span class="p">{</span>
+</span><span class='line'>                      <span class="nx">observe</span><span class="o">:</span> <span class="s1">&#39;salary&#39;</span><span class="p">,</span>
+</span><span class='line'>                      <span class="nx">onGet</span><span class="o">:</span> <span class="s1">&#39;salaryConverter&#39;</span>
+</span><span class='line'>                      <span class="p">}</span> <span class="p">,</span>
+</span><span class='line'>                  <span class="s1">&#39;[name = &quot;pro&quot;]&#39;</span> <span class="o">:</span> <span class="s2">&quot;pro&quot;</span><span class="p">,</span>
+</span><span class='line'>                  <span class="s1">&#39;[name = &quot;favSearch&quot;]&#39;</span> <span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>                      <span class="nx">observe</span> <span class="o">:</span> <span class="s1">&#39;favSearch&#39;</span><span class="p">,</span>
+</span><span class='line'>                      <span class="nx">update</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">$el</span><span class="p">,</span> <span class="nx">val</span><span class="p">,</span> <span class="nx">model</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                          <span class="nx">$el</span><span class="p">.</span><span class="nx">text</span><span class="p">(</span><span class="nx">val</span><span class="p">);</span>
+</span><span class='line'>                          <span class="nx">$el</span><span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;href&quot;</span><span class="p">,</span><span class="nx">val</span><span class="p">);</span>
+</span><span class='line'>                          <span class="p">}</span>
+</span><span class='line'>                      <span class="p">}</span>
+</span><span class='line'>                  <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Some notable differences are that, the bindings map declarations are opposite to that of ModelBinder. Here we specify the selector as a <code>key</code> on the bindings map and the value is the attribute name on the <code>model</code>. For example, the element with <code>name</code> property set to <code>firstName</code> will be bound to the <code>firstName</code> property on the model.</p>
+
+<h3>using the <code>onGet</code> callback function</h3>
+
+<p>As we might recollect, we have a requirement in our application to format the salary field when it gets displayed. To achieve this through <code>Stickit</code> we make use of the <code>onGet</code> callback in the bindings. As we can see from the code below, the bindings for the salary field looks a little different from others. Its declared as an object with two properties <code>observe</code> and <code>onGet</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">editorView</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="p">...</span>
+</span><span class='line'>      <span class="s1">&#39;[name = &quot;salary&quot;]&#39;</span><span class="o">:</span><span class="p">{</span>
+</span><span class='line'>          <span class="nx">observe</span><span class="o">:</span> <span class="s1">&#39;salary&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="nx">onGet</span><span class="o">:</span> <span class="s1">&#39;salaryConverter&#39;</span>
+</span><span class='line'>          <span class="p">}</span> <span class="p">,</span>
+</span><span class='line'>  <span class="p">...</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>According to stickit documentation, the <code>observe</code> property is a string or an array which is used to map a model attribute to a view element. The <code>onGet</code> is a  callback which returns a formatted version of the model attribute value that is passed in before setting it in the bound view element. The <code>salaryConverter</code> will be a function that is defined with in our backbone view.</p>
+
+<h3>using the <code>update</code> callback function</h3>
+
+<p>In order to achieve our next requirement, i.e when we change our fav search engine on the editor view, we should change the label and the href property on the anchor element in the preview view. To achieve this we make use of the <code>update</code> callback function with in our model. The code below shows the bindings</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">viewerBindings</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>                  <span class="p">...</span>
+</span><span class='line'>                  <span class="s1">&#39;[name = &quot;favSearch&quot;]&#39;</span> <span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>                      <span class="nx">observe</span> <span class="o">:</span> <span class="s1">&#39;favSearch&#39;</span><span class="p">,</span>
+</span><span class='line'>                      <span class="nx">update</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">$el</span><span class="p">,</span> <span class="nx">val</span><span class="p">,</span> <span class="nx">model</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                          <span class="nx">$el</span><span class="p">.</span><span class="nx">text</span><span class="p">(</span><span class="nx">val</span><span class="p">);</span>
+</span><span class='line'>                          <span class="nx">$el</span><span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;href&quot;</span><span class="p">,</span><span class="nx">val</span><span class="p">);</span>
+</span><span class='line'>                          <span class="p">}</span>
+</span><span class='line'>                      <span class="p">}</span>
+</span><span class='line'>                  <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>According to the Stickit documentation <code>update</code> is a callback which overrides stickit&#8217;s default handling for updating the value of a bound view element. The callback function gives a handle to the view&#8217;s bounded element. Using this we set the text and the href property on the model.</p>
+
+<p>Finally, with in our view render function we call <code>stickit</code> and pass in the model and bindings.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">//create  a Backbone view</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">BaseView</span> <span class="o">=</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">View</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+</span><span class='line'>      <span class="nx">close</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>          <span class="c1">//when view closes, call unstickit to unbind Model bindings</span>
+</span><span class='line'>          <span class="k">this</span><span class="p">.</span><span class="nx">unstickit</span><span class="p">();</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="nx">render</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>          <span class="c1">//when the view is rendered</span>
+</span><span class='line'>          <span class="c1">//get the templated id from passed in options</span>
+</span><span class='line'>          <span class="c1">//NOTE: templateId is not a property of Backbone or Backbone Stickit, its a custom parameter that we pass into view&#39;s constructor           </span>
+</span><span class='line'>          <span class="kd">var</span> <span class="nx">templateId</span> <span class="o">=</span> <span class="s2">&quot;#&quot;</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">templateId</span><span class="p">;</span>
+</span><span class='line'>          <span class="c1">//construct the template</span>
+</span><span class='line'>          <span class="kd">var</span> <span class="nx">template</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">template</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="nx">templateId</span><span class="p">).</span><span class="nx">html</span><span class="p">());</span>
+</span><span class='line'>          <span class="kd">var</span> <span class="nx">templateHTML</span> <span class="o">=</span> <span class="nx">template</span><span class="p">();</span>
+</span><span class='line'>          <span class="c1">//append it to current view</span>
+</span><span class='line'>          <span class="k">this</span><span class="p">.</span><span class="nx">$el</span><span class="p">.</span><span class="nx">html</span><span class="p">(</span><span class="nx">templateHTML</span><span class="p">);</span>
+</span><span class='line'>          <span class="k">this</span><span class="p">.</span><span class="nx">stickit</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">model</span><span class="p">,</span><span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">bindings</span><span class="p">);</span>
+</span><span class='line'>          <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="c1">//create a converter function, that formats the </span>
+</span><span class='line'>      <span class="c1">//given value as money, for example 123 gets converted to</span>
+</span><span class='line'>      <span class="c1">//$123.00, used by the money input.</span>
+</span><span class='line'>      <span class="nx">salaryConverter</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span><span class="nx">options</span><span class="p">){</span>
+</span><span class='line'>          <span class="k">return</span>  <span class="nx">accounting</span><span class="p">.</span><span class="nx">formatMoney</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>Stickit vs ModelBinder, which one should I use?</h1>
+
+<p>In my opinion, both of these are awesome frameworks for data-binding. As we can see form the application we&#8217;ve built, both these frameworks provide a great way for binding your models to views.</p>
+
+<p>I did not investigate much in terms of which is efficient in terms of performance so I cannot really comment on either of these frameworks in terms of their performance.</p>
+
+<p>So, if you are planning to implement data-binding for your own application, choose a framework which best meets your application requirements and architecture.</p>
+
+<h1>About Backbone.Stickit</h1>
+
+<p>More detail&#8217;s about Stickit it  can be found on their <a href="http://nytimes.github.io/backbone.stickit/">project page</a>. Special thanks to <a href="https://github.com/delambo">Matthew DeLambo</a> for developing yet another awesome data-binding framework for Backbone.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Data-Binding your Backbone Models to Views]]></title>
+    <link href="http://niki4810.github.com/blog/2013/03/02/new-post/"/>
+    <updated>2013-03-02T15:50:00-08:00</updated>
+    <id>http://niki4810.github.com/blog/2013/03/02/new-post</id>
+    <content type="html"><![CDATA[<h1>Prologue</h1>
+
+<p>One of the first things any developer migrating into the Javascript world would look for is to find common coding practices and concepts. <code>Data-Binding</code> is one such concept which facilitates bi-directional binding between views and its associated models.<!-- more --> While each programming language might have its own way for achieving this, Javascript does provide a wide variety of options for implementing <code>Data-Binding</code>. In this post, I will show, how easy it is to bind your Backbone models to views using the Backbone.ModelBinder plugin.</p>
+
+<h1>How can we achieve <code>Data-Binding</code> using ModelBinder?</h1>
+
+<p>To illustrate this, we will be building a simple application which looks like this: <a href="http://jsfiddle.net/niki4810/CSyAz/embedded/result/">Link</a>.</p>
+
+<ul>
+<li>The annotate source code for this example application can be found at: <a href="http://niki4810.github.io/annotate-sources/model-binding.html">Source</a></li>
+<li>The complete fiddle can be found at : <a href="http://jsfiddle.net/niki4810/CSyAz/">Fiddle</a></li>
+</ul>
+
+
+<p>The application contains two views, an <code>editor view</code> for entering information and a <code>viewer view</code> for previewing the same information in read only mode. Both these views display the following information :</p>
+
+<ul>
+<li>First Name</li>
+<li>Last Name</li>
+<li>Salary in USD</li>
+<li>Professional</li>
+<li>Favorite Search Engine</li>
+</ul>
+
+
+<p>Some of the requirements for our application are</p>
+
+<ol>
+<li>As we update a field in the edit view, the corresponding field on the preview view should be updated</li>
+<li>When we update the <code>salary</code> field, the view should format the value as money</li>
+<li>When the <code>favorite search engine</code> field is changed in the edit view, the preview view should render a hyperlink and should update both the <code>label</code> and the <code>href</code> properties on that hyperlink.</li>
+</ol>
+
+
+<p>Now that we have our requirements set, as a first step we create a <code>Backbone Model</code> and set some default values in it.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">//create a instance of Backbone Model with some default values.</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">BaseViewModel</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Model</span><span class="p">();</span>
+</span><span class='line'><span class="nx">BaseViewModel</span><span class="p">.</span><span class="nx">set</span><span class="p">({</span>
+</span><span class='line'>        <span class="s2">&quot;firstName&quot;</span><span class="o">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;lastName&quot;</span><span class="o">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;salary&quot;</span><span class="o">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;pro&quot;</span><span class="o">:</span> <span class="kc">true</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Create a converter function , that formats the given value as money, for example <code>123</code> gets converted to <code>$123.00</code>. This function takes two parameters: a <code>value</code> parameter, which is the amount that needs to be formatted &amp; <code>direction</code>, which has two possible values <code>ModelToView</code> or <code>ViewToModel</code>. Both these values are automatically supplied by the model binder plugin when a change occurs on the binded element.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">salaryConverter</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">direction</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nx">direction</span> <span class="o">===</span> <span class="s2">&quot;ModelToView&quot;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="c1">//format only when the direction is from model to view</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nx">accounting</span><span class="p">.</span><span class="nx">formatMoney</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>        <span class="c1">//from view to model, just store the plain value</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nx">value</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For each view we pass in a bindings object, which determines, which element should be bound to which property on the model. For example, to bind the <code>firstName</code> property on the model to an element with <code>name set to firstName</code> on the edit view, the bindings object would look like:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">editorBinding</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="s2">&quot;firstName&quot;</span><span class="o">:</span> <span class="s1">&#39;[name = &quot;firstName&quot;]&#39;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The literal value <code>firstName</code> points to an <code>attribute</code> on the Backbone model, and the <code>[name="firstName"]</code> acts a selector for selecting an element in the edit view (which is a Backbone View instance).</p>
+
+<h3>Using the <code>converter</code> function</h3>
+
+<p>Similar to firstName, we set other bindings for other attributes as well</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">editorViewBindings</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>        <span class="s2">&quot;firstName&quot;</span><span class="o">:</span> <span class="s1">&#39;[name = &quot;firstName&quot;]&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;lastName&quot;</span><span class="o">:</span> <span class="s1">&#39;[name = &quot;lastName&quot;]&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;salary&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">selector</span><span class="o">:</span> <span class="s1">&#39;[name = &quot;salary&quot;]&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">converter</span><span class="o">:</span> <span class="nx">salaryConverter</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>        <span class="s2">&quot;pro&quot;</span><span class="o">:</span> <span class="s1">&#39;[name = &quot;pro&quot;]&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;favSearch&quot;</span><span class="o">:</span> <span class="s1">&#39;[name = &quot;favSearch&quot;]&#39;</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you might have already noticed, for the <code>salary</code> attribute we set the value as a object which internally has two properties:</p>
+
+<ul>
+<li><p><code>selector</code> property determines which element this property should be bound to. In this case an element with <code>name property set to salary</code>.</p></li>
+<li><p>We assign the <code>salaryConverter</code> function to the <code>converter</code> property. So whenever there is a change event on element with <code>[name = "salary"]</code>, the Backbone ModelBinder plugin calls the <code>salaryConverter</code> twice. Once from <code>Model to view</code> and the other from <code>View to Model</code>. Through this we can achieve our second requirement where we want to format the salary attribute as money when displaying on the view.</p></li>
+</ul>
+
+
+<h3>using the <code>elAttribute</code></h3>
+
+<p>Similar to the edit view bindings we construct a binding object for the viewer view. The code looks something like this</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">viewerBindings</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>    <span class="s2">&quot;firstName&quot;</span><span class="o">:</span> <span class="s1">&#39;[name = &quot;firstName&quot;]&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;lastName&quot;</span><span class="o">:</span> <span class="s1">&#39;[name = &quot;lastName&quot;]&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;salary&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">selector</span><span class="o">:</span> <span class="s1">&#39;[name = &quot;salary&quot;]&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">converter</span><span class="o">:</span> <span class="nx">salaryConverter</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>        <span class="s2">&quot;pro&quot;</span><span class="o">:</span> <span class="s1">&#39;[name = &quot;pro&quot;]&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;favSearch&quot;</span><span class="o">:</span> <span class="p">[{</span>
+</span><span class='line'>        <span class="nx">selector</span><span class="o">:</span> <span class="s1">&#39;[name = &quot;favSearch&quot;]&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">elAttribute</span><span class="o">:</span> <span class="s2">&quot;href&quot;</span>
+</span><span class='line'>    <span class="p">},</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">selector</span><span class="o">:</span> <span class="s1">&#39;[name = &quot;favSearch&quot;]&#39;</span>
+</span><span class='line'>    <span class="p">}]</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>One major change in this binding object is that, we assign an array to the <code>favSearch</code> property. We do this to achieve our third requirement, where we want to bind the label and the href properties on the hyperlink that gets rendered in the viewer view.</p>
+
+<p>While the second element in the array is a simple selector <code>selector: '[name = "favSearch"]'</code> the first element introduces us to a new property called <code>elAttribute</code>. What this means is that, when ever there is a change on the <code>favSearch</code> property, update the <code>href</code> property on the element with name <code>[name = "favSearch"]</code>.</p>
+
+<p>We did not specify the <code>elAttribute</code> for other bindings because, the ModelBinder applies it on the text property of each element by default.</p>
+
+<h3>Applying our binding</h3>
+
+<p>Now that we have our binding objects ready, we will have to create a Backbone view for applying this binding. Since the app we are developing is pretty simple and there is no much difference between both our view, we construct on single backbone view that takes the template id and bindings as parameters. Our view code looks like this</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">//create  a Backbone view</span>
+</span><span class='line'>   <span class="kd">var</span> <span class="nx">BaseView</span> <span class="o">=</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">View</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+</span><span class='line'>       <span class="c1">//local variable for model binder</span>
+</span><span class='line'>       <span class="nx">_modelBinder</span><span class="o">:</span> <span class="kc">undefined</span><span class="p">,</span>
+</span><span class='line'>       <span class="nx">initialize</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>           <span class="c1">//on view initialize, initialize _modelBinder</span>
+</span><span class='line'>           <span class="k">this</span><span class="p">.</span><span class="nx">_modelBinder</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">ModelBinder</span><span class="p">();</span>
+</span><span class='line'>       <span class="p">},</span>
+</span><span class='line'>       <span class="nx">close</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>           <span class="c1">//when view closes, unbind Model bindings</span>
+</span><span class='line'>           <span class="k">this</span><span class="p">.</span><span class="nx">_modelBinder</span><span class="p">.</span><span class="nx">unbind</span><span class="p">();</span>
+</span><span class='line'>       <span class="p">},</span>
+</span><span class='line'>       <span class="nx">render</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>           <span class="c1">//when the view is rendered</span>
+</span><span class='line'>           <span class="c1">//get the templates id from passed in options</span>
+</span><span class='line'>           <span class="c1">//NOTE: templateId is not a property of Backbone or       ModelBinder, its a custom parameter that we pass into view&#39;s constructor</span>
+</span><span class='line'>
+</span><span class='line'>           <span class="kd">var</span> <span class="nx">templateId</span> <span class="o">=</span> <span class="s2">&quot;#&quot;</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">templateId</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>           <span class="c1">//construct the template</span>
+</span><span class='line'>           <span class="kd">var</span> <span class="nx">template</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">template</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="nx">templateId</span><span class="p">).</span><span class="nx">html</span><span class="p">());</span>
+</span><span class='line'>           <span class="kd">var</span> <span class="nx">templateHTML</span> <span class="o">=</span> <span class="nx">template</span><span class="p">();</span>
+</span><span class='line'>           <span class="c1">//append it to current view</span>
+</span><span class='line'>           <span class="k">this</span><span class="p">.</span><span class="nx">$el</span><span class="p">.</span><span class="nx">html</span><span class="p">(</span><span class="nx">templateHTML</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>           <span class="c1">//get the bindings attribute from passed options</span>
+</span><span class='line'>            <span class="c1">//NOTE: bindings is not a property of Backbone, its a custom parameter that we pass into view&#39;s constructor</span>
+</span><span class='line'>           <span class="kd">var</span> <span class="nx">bindings</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">bindings</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>           <span class="c1">//call modelBinder bind api to apply bindings on the current view</span>
+</span><span class='line'>           <span class="k">this</span><span class="p">.</span><span class="nx">_modelBinder</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span>
+</span><span class='line'>           <span class="k">this</span><span class="p">.</span><span class="nx">model</span> <span class="cm">/*the model to bind*/</span> <span class="p">,</span>
+</span><span class='line'>           <span class="k">this</span><span class="p">.</span><span class="nx">el</span> <span class="cm">/*root element*/</span> <span class="p">,</span>
+</span><span class='line'>           <span class="nx">bindings</span> <span class="cm">/*bindings*/</span> <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>           <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+</span><span class='line'>       <span class="p">}</span>
+</span><span class='line'>   <span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>While the above code simply shows a standard Backbone view object. There are two main parts to focus. In the <code>initialize</code> function we create a new instance of model binder and assign it to a local variable.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'> <span class="k">this</span><span class="p">.</span><span class="nx">_modelBinder</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">ModelBinder</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The main place where our bindings are applied is in the <code>render</code> function.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="k">this</span><span class="p">.</span><span class="nx">_modelBinder</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span>
+</span><span class='line'><span class="k">this</span><span class="p">.</span><span class="nx">model</span> <span class="cm">/*the model to bind*/</span> <span class="p">,</span>
+</span><span class='line'><span class="k">this</span><span class="p">.</span><span class="nx">el</span> <span class="cm">/*root element*/</span> <span class="p">,</span>
+</span><span class='line'><span class="nx">bindings</span> <span class="cm">/*bindings*/</span> <span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As we can see we simply call the <code>bind</code> function on the modelBinder to bind a model to the view&#8217;s root element. This function accepts three parameters <code>the model</code> a backbone model containing attributes information, <code>root el</code> the parent level element of the backbone view and <code>bindings</code> parameter which specific the relationship between the backbone model attributes and view elements.</p>
+
+<p>Now that we have everything setup all we need to do is render both the views and append it to the DOM.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">//instantiate the editor view by passing the model, template id and </span>
+</span><span class='line'><span class="c1">//bindings into the constructor</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">myEditorView</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BaseView</span><span class="p">({</span>
+</span><span class='line'>    <span class="nx">model</span><span class="o">:</span> <span class="nx">BaseViewModel</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">templateId</span><span class="o">:</span> <span class="s2">&quot;editor-template&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">bindings</span><span class="o">:</span> <span class="nx">editorViewBindings</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'> <span class="c1">//instantiate the viewer view by passing the model, template id and </span>
+</span><span class='line'><span class="c1">//bindings into the constructor</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">myViewerView</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BaseView</span><span class="p">({</span>
+</span><span class='line'>    <span class="nx">model</span><span class="o">:</span> <span class="nx">BaseViewModel</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">templateId</span><span class="o">:</span> <span class="s2">&quot;viewer-template&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">bindings</span><span class="o">:</span> <span class="nx">viewerBindings</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//append both the Backbone views to the container</span>
+</span><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;.container&quot;</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="nx">myEditorView</span><span class="p">.</span><span class="nx">render</span><span class="p">().</span><span class="nx">$el</span><span class="p">);</span>
+</span><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;.container&quot;</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="nx">myViewerView</span><span class="p">.</span><span class="nx">render</span><span class="p">().</span><span class="nx">$el</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As mentioned earlier, the complete source code for this example can be found at the following <a href="http://jsfiddle.net/niki4810/CSyAz/">fiddle</a>. Although this looks like a lot of code, it simple once we understand the basic concept behind model binding.</p>
+
+<h1>What are other alternatives for <code>Data-Binding</code> Backbone Views?</h1>
+
+<p>As they say, there are a trillion ways for doing million things, Here are some other options for <code>Data-Binding</code> your Backbone Models to Views.</p>
+
+<ul>
+<li><a href="http://kmalakoff.github.io/knockback/">KnockBack</a></li>
+<li><a href="http://rivetsjs.com/">Rivets.js</a></li>
+</ul>
+
+
+<p>I personally feel ModelBinder is much simpler in terms of implementation than the above two frameworks.</p>
+
+<h1>About Backbone.ModelBinder</h1>
+
+<p>Special thanks to <a href="https://github.com/theironcook">Bart Wood</a> for developing such an awesome framework. More details can be found at <a href="https://github.com/theironcook/Backbone.ModelBinder">Backbone.ModelBinder</a>.</p>
+]]></content>
+  </entry>
+  
+</feed>

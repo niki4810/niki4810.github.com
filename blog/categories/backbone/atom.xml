@@ -1,0 +1,884 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Backbone | Octoblog]]></title>
+  <link href="http://niki4810.github.com/blog/categories/backbone/atom.xml" rel="self"/>
+  <link href="http://niki4810.github.com/"/>
+  <updated>2014-12-13T22:18:15-08:00</updated>
+  <id>http://niki4810.github.com/</id>
+  <author>
+    <name><![CDATA[Nikhilesh Katakam]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Building Modular apps using Backbone and Geppetto]]></title>
+    <link href="http://niki4810.github.com/blog/2013/05/26/building-modular-apps-using-backbone-and-geppetto/"/>
+    <updated>2013-05-26T11:06:00-07:00</updated>
+    <id>http://niki4810.github.com/blog/2013/05/26/building-modular-apps-using-backbone-and-geppetto</id>
+    <content type="html"><![CDATA[<p>When building large multi-modular apps, embedding business logic within your Backbone views or models does not scale well.  Ideally you would want to de-couple your business logic from the view logic. Solving this problem becomes really easy using <code>Geppetto</code>.<!-- more --></p>
+
+<h1>Prerequisites</h1>
+
+<p>To better understand the example in this blog post, it is important to have a good knowledge on the following frameworks:</p>
+
+<ul>
+<li>Backbone &amp; Marionette</li>
+<li>Backbone ModelBinder
+
+<ul>
+<li>Please refer to my previous <a href="http://niki4810.github.io/blog/2013/03/02/new-post/">post</a> on Backbone ModelBinder</li>
+</ul>
+</li>
+<li>RequireJS
+
+<ul>
+<li><code>Cary Landholt</code> has a really good <a href="http://www.youtube.com/watch?v=VGlDR1QiV3A">screen cast</a> on requireJs</li>
+</ul>
+</li>
+</ul>
+
+
+<h1>Experience the application first</h1>
+
+<p>We will be building a simple movie search app. We make use of the <a href="http://developer.rottentomatoes.com/">rotten tomatoes developer api</a> for fetching the movie details.
+Here is the direct link to the application: <a href="http://niki4810.github.io/annotate-sources/Communicating-Via-Geppetto/index.html?">link</a></p>
+
+<h1>Some more information on the application</h1>
+
+<p>The application we are building is a simple search page with <code>three</code> views. A <code>search view</code> on the left for searching a movie, a <code>result view</code> on the right for displaying the search result and a <code>container view</code> which holds the search and the result views.</p>
+
+<h1>What functionality does each view provide?</h1>
+
+<p>Lets list out the functionality that each view is expected to provide.</p>
+
+<ul>
+<li><p>Search View</p>
+
+<ul>
+<li>Should accept the movie title as users input.</li>
+<li>Should  shout out the movie title using an event when the search button is clicked.</li>
+</ul>
+</li>
+<li><p>Result View</p>
+
+<ul>
+<li>Should keep listening for data.</li>
+<li>Display the data to the user whenever it gets it.</li>
+</ul>
+</li>
+<li><p>Container View</p>
+
+<ul>
+<li>Acts as a dumb container that holds the search and the result view.</li>
+</ul>
+</li>
+</ul>
+
+
+<h1>Lets create the view's first</h1>
+
+<p>Here are the code snippets for each view</p>
+
+<h3>Search View</h3>
+
+<p>```javascript
+//search view
+define(</p>
+
+<pre><code>[
+"jquery",
+"underscore", 
+"backbone", 
+"marionette",
+"geppetto",
+"text!src/templates/SearchViewTemplate.html"
+],function(
+    $,
+    _,
+    Backbone,
+    Marionette,
+    Geppetto,
+    SearchViewTemplate
+){
+
+
+var SearchView = Marionette.ItemView.extend({
+    template : SearchViewTemplate,
+    className : "well span4",
+    bindings : {
+            "title" : '[name = "title"]'
+    },
+    events : {
+        "click button.searchBtn" : "searchClicked"
+    },
+    searchClicked : function(e) {
+        if(this.model.get("title")){
+        this.context.dispatch("performSearchEvent"/*event name*/,{data:this.model}/*event payload*/);
+        }else{
+            //if title is not set, shake the text input
+            //should have a required validator, but this would work
+            this.$('[name = "title"]').removeClass().addClass('animated shake');
+            var that = this;
+            var wait = window.setTimeout(function() {
+                that.$('[name = "title"]').removeClass()
+            }, 1300); 
+
+        }
+    },
+    //local variable for model binder
+    _modelBinder : undefined,
+    initialize : function() {
+         _.bindAll(this);
+        //on view initialize, initialize _modelBinder
+        this._modelBinder = new Backbone.ModelBinder();
+        //save the passed in context locally  such that
+        // we can dispatch or listen to events on this context
+        this.context = this.options.context;
+    },
+    close : function() {
+        //when view closes, unbind Model bindings
+        this._modelBinder.unbind();
+    },
+    onRender : function() {           
+        this._modelBinder.bind(this.model/*the model to bind*/, 
+                               this.el/*root element*/, 
+                               this.bindings /*bindings*/ );
+
+    }
+});
+
+return SearchView;
+</code></pre>
+
+<p>})</p>
+
+<p>```</p>
+
+<h3>Result View</h3>
+
+<p>```javascript
+//result view
+define([</p>
+
+<pre><code>"jquery", 
+"underscore", 
+"backbone", 
+"marionette",
+"geppetto", 
+"text!src/templates/ResultViewTemplate.html"
+],
+</code></pre>
+
+<p> function(</p>
+
+<pre><code>$, 
+_, 
+Backbone, 
+Marionette,
+Geppetto, 
+ResultViewTemplate) {
+var ResultView = Marionette.ItemView.extend({
+    template: ResultViewTemplate,
+    className : "well span6 clearfix",
+    bindings : {
+            "title" : '[name = "title"]',
+            "year" : '[name = "year"]',
+            "rated" : '[name = "rated"]',
+            "rating" :'[name ="rating"]',
+            "poster" :{selector: '[name=poster]',  elAttribute: 'src'}
+    },
+    initialize : function() {
+          _.bindAll(this);
+            //on view initialize, initialize _modelBinder
+        this._modelBinder = new Backbone.ModelBinder();
+        //save the passed in context locally  such that
+        // we can dispatch or listen to events on this context
+        this.context = this.options.context;
+        this.context.listen(this, "loadResultsSuccessEvent"/*event name*/, 
+                            this.handleSearchResultsLoaded/*event listener*/);
+        this.context.listen(this, "loadResultsErrorEvent"/*event name*/, 
+                            this.handleSearchResultsLoadError/*event listener*/);
+    },      
+    close : function() {
+        //when view closes, unbind Model bindings
+        this._modelBinder.unbind();
+    },
+    onRender : function() {
+
+        this._modelBinder.bind(this.model/*the model to bind*/, 
+                               this.el/*root element*/, 
+                               this.bindings /*bindings*/ );
+
+
+    },
+    handleSearchResultsLoaded : function(data){
+        this.model.clear();
+        this.model.set(data);
+    },
+    handleSearchResultsLoadError : function(){
+        this.model.clear();
+        alert('Opps...something went wrong, try searching again');
+    }
+});
+
+return ResultView;
+</code></pre>
+
+<p>})</p>
+
+<p>```</p>
+
+<h3>Container View</h3>
+
+<p>```javascript
+//container view
+define([</p>
+
+<pre><code>"jquery",
+"underscore", 
+"backbone", 
+"marionette",
+"geppetto", 
+"src/controller/ApplicationContext", 
+"text!src/templates/ContainerTemplate.html", 
+"src/views/SearchView", 
+"src/views/ResultView"],
+function(
+    $, 
+    _, 
+    Backbone, 
+    Marionette,
+    Geppetto, 
+    ApplicationContext, 
+    ContainerTemplate,
+    SearchView, 
+    ResultView) {
+
+//container view acts as plain layout view
+var ContainerView = Marionette.ItemView.extend({
+    //set template
+    template : ContainerTemplate,
+    className : "container myContainer",
+    initialize : function() {
+         _.bindAll(this);
+        //create a Geppetto context
+        Geppetto.bindContext({
+            view : this,
+            context : ApplicationContext
+        });
+    },
+    onRender : function() {
+        //when view is container view is rendered
+        //construct the search view
+        this.constructSearchView();
+        //construct the result view
+        this.constructResultView();
+    },
+    constructSearchView : function() {
+        //instantiate an search view
+        //notice that we are passig the context from the
+        //current container view to the search view constructor
+        var mySearchView = new SearchView({
+            context : this.context,
+            model : new Backbone.Model()
+        });
+        //render the view
+        mySearchView.render();
+        //append it the current container
+    this.$el.append(mySearchView.$el);
+
+    },
+    constructResultView : function() {
+        //instantiate an result view
+        //notice that we are passig the context from the
+        //current container view to the result view constructor
+        var myResultView = new ResultView({
+            context : this.context,
+            model : new Backbone.Model()
+        });
+        //render the view
+        myResultView.render()
+        //append it the current container
+        this.$el.append(myResultView.$el);
+
+
+    }
+});
+return ContainerView;
+</code></pre>
+
+<p>});
+```</p>
+
+<h1>So, who is actually fetching the data ?</h1>
+
+<p>By looking at the code above, none of the views hold the business logic to fetch the data from the serve. The <code>search view</code> simply dispatches a <code>performSearchEvent</code> with the movie title as payload. The <code>result view</code> keeps listening for <code>loadResultsSuccessEvent</code> or <code>loadResultsErrorEvent</code> for displaying the data or error message &amp; the <code>container view</code> simply creates these two views.</p>
+
+<p>So who is actually querying the server ? Well, with <code>Geppetto</code>, you could define commands that lets you handle all the complex business logic.</p>
+
+<p>The code snippet below shows the command for our example. The commands have an <code>execute</code> function which gets called when an event tied to the command is triggered.</p>
+
+<p>```javascript
+//Search Movies Command
+define(["jquery", "underscore"], function($, _) {</p>
+
+<pre><code>var command = function() {
+};
+
+command.prototype.execute = function() {
+    _.bindAll(this);
+    var that = this;
+
+    var apikey = "78ejsdd76tc6jsffmrxjddxu";
+    var baseUrl = "http://api.rottentomatoes.com/api/public/v1.0";
+    var moviesSearchUrl = baseUrl + '/movies.json?apikey=' + apikey;
+    //get the movie title
+    var query = this.eventData.data.get("title");
+    var pageLimit = "&amp;page_limit=1";
+
+    //make an plain jquery ajax call to fetch the movie details using the
+    //rotten tomatoes public api's
+
+    $.ajax({
+        url : moviesSearchUrl + '&amp;q=' + encodeURI(query) + pageLimit,
+        dataType : "jsonp",
+        success : function(data) {
+            that.handleDataLoadSuccess(data);
+        },
+        statusCode : {
+            503 : function() {
+                that.handleDataLoadError("page not found");
+            }
+        },
+        error : function(jqXHR, textStatus, errorThrown) {
+            that.handleDataLoadError(errorThrown);
+        }
+    });
+
+};
+
+command.prototype.handleDataLoadSuccess = function(data) {
+    var movies = data.movies;
+
+    if (!data || !data.movies || data.movies.length &lt;= 0) {
+        //when there are no movies dispatch an error event
+        this.context.dispatch("loadResultsErrorEvent"/*event name*/);
+    } else {
+        //when we get the movies results
+        //construct an object with movie details
+        var resultObj = {};
+        resultObj.rated = movies[0].mpaa_rating;
+        resultObj.title = movies[0].title;
+        resultObj.rating = movies[0].ratings.audience_score;
+        resultObj.year = movies[0].year;
+        resultObj.poster = movies[0].posters.original;
+        //dispatch an event on the context with movie details as payload
+        this.context.dispatch("loadResultsSuccessEvent"/*event name*/, resultObj);
+    }
+
+};
+
+command.prototype.handleDataLoadError = function(e) {
+    //when there are no movies dispatch an error event
+    this.context.dispatch("loadResultsErrorEvent"/*event name*/);
+};
+
+return command;
+</code></pre>
+
+<p>})</p>
+
+<p>```</p>
+
+<h1>How does this command get called?</h1>
+
+<p><code>Geppetto</code> controller/context facilitate's the mappings between events and command. In our case whenever a <code>performSearchEvent</code> is dispatch the context/controller maps it to the <code>SearchMoviesCommand</code> and supplies the <code>eventData</code> as payload to the command.</p>
+
+<p>```javascript
+//application context or controller
+define([</p>
+
+<pre><code>'backbone', 
+'geppetto',
+'src/commands/SearchMoviesCommand'], 
+</code></pre>
+
+<p>function(</p>
+
+<pre><code>Backbone,
+Geppetto, 
+SearchMoviesCommand) {
+
+//return a geppetto context
+return Geppetto.Context.extend({
+    //setup an initialize function
+    initialize : function() {
+        // map commands 
+        //when ever a "performSearchEvent" is dispatch on this command
+        //the context delegates that call to the SearchMoviesCommand
+        this.mapCommand( "performSearchEvent"/*event name*/, SearchMoviesCommand );
+    }
+});
+</code></pre>
+
+<p>})</p>
+
+<p>```</p>
+
+<p>If we look at the initialize function in container view, we create a context using the bindContext function.</p>
+
+<p>```javascript
+...
+Geppetto.bindContext({</p>
+
+<pre><code>view : this,
+context : ApplicationContext
+</code></pre>
+
+<p>});
+...
+```</p>
+
+<p>We then pass this context into search and result view constructors. Using context, communicating between view becomes really easy. Each view that shares a common context can dispatch and listen to events on the context.</p>
+
+<h1>So what's the benefit of Geppetto</h1>
+
+<p>By now, its should be clear as to what advantage Geppetto brings to your Backbone apps. Here is a list of them:</p>
+
+<ul>
+<li>Currently we use the rotten tomatoes api's for searching movies. If we want to use a different service provider, all we need to do is modify the logic in the command. Our views remain untouched</li>
+<li>The same logic goes for the views as well, if we want to change the view layout, the business logic remains untouched.</li>
+<li>Since there is a clear separation of concern and de-coupling between our views and command, writing test cases would be really easy.</li>
+</ul>
+
+
+<h1>Where can I find the complete source code for this example?</h1>
+
+<p>The complete source code for this example can be found at the following repo <a href="https://github.com/niki4810/Developing-Modular-Apps-With-Geppetto">link</a></p>
+
+<p>Here is a direct link for the <a href="https://github.com/niki4810/Developing-Modular-Apps-With-Geppetto/archive/master.zip">zip file</a></p>
+
+<h1>Credits</h1>
+
+<ul>
+<li><a href="http://modeln.github.io/backbone.geppetto/">Geppetto's</a> project page has detailed documentation on all of its features, please refer to it for further details.</li>
+<li>Special thanks to <a href="https://github.com/geekdave">David Cadwallader</a> for building such a elegant framework.</li>
+<li>The example make uses of the <a href="http://developer.rottentomatoes.com/">rotten tomatoes developer api</a> for fetching the movie details.</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Databinding using Backbone Stickit]]></title>
+    <link href="http://niki4810.github.com/blog/2013/05/04/databinding-using-backbone-stickit/"/>
+    <updated>2013-05-04T10:56:00-07:00</updated>
+    <id>http://niki4810.github.com/blog/2013/05/04/databinding-using-backbone-stickit</id>
+    <content type="html"><![CDATA[<p>In my previous <a href="http://niki4810.github.io/blog/2013/03/02/new-post/">post</a> we looked at setting up data-bindings between our backbone views and models using the <code>Backbone.Modelbinder</code> plugin. In this post, I will demonstrate another viable alternative for data-binding called <code>Backbone.Stickit</code>.<!-- more --></p>
+
+<h1>How can we achieve data-binding using <code>Backbone.Stickit</code>?</h1>
+
+<p>To illustrate this we will build the same application as we did in the previous <a href="http://niki4810.github.io/blog/2013/03/02/new-post/">post</a>. The only difference is that the example in this post uses <code>Backbone.Stickit</code> for <code>data-binding</code>.</p>
+
+<ul>
+<li>The annotated source code for this example can be found at the following <a href="http://niki4810.github.io/annotate-sources/databinding-using-stickit.html">link</a></li>
+<li>The complete fiddle can be found at the following <a href="http://jsfiddle.net/niki4810/yQjPD/">link</a></li>
+<li>A full screen preview of this application can be found at the following <a href="http://jsfiddle.net/niki4810/yQjPD/embedded/result/">link</a></li>
+</ul>
+
+
+<p>Surprisingly, the changes I had to make in order to convert my previous example to use Backbone.Stickit were pretty minimal.  To start off the bindings maps for the <code>editor</code> and the <code>preview</code> views are as follows.</p>
+
+<p>```javascript
+var editorViewBindings = {</p>
+
+<pre><code>    '[name = "firstName"]' : "firstName", 
+    '[name = "lastName"]' : "lastName",
+    '[name = "salary"]':{
+        observe: 'salary',
+        onGet: 'salaryConverter'
+        } ,
+    '[name = "pro"]' : "pro",
+    '[name = "favSearch"]': "favSearch"
+    };
+</code></pre>
+
+<p>var viewerBindings = {</p>
+
+<pre><code>                '[name = "firstName"]' : "firstName", 
+                '[name = "lastName"]' : "lastName",
+                '[name = "salary"]':{
+                    observe: 'salary',
+                    onGet: 'salaryConverter'    
+                    } ,
+                '[name = "pro"]' : "pro",
+                '[name = "favSearch"]' : {
+                    observe : 'favSearch',
+                    update: function($el, val, model, options) {
+                        $el.text(val);
+                        $el.attr("href",val);
+                        }
+                    }
+                }
+</code></pre>
+
+<p>```</p>
+
+<p>Some notable differences are that, the bindings map declarations are opposite to that of ModelBinder. Here we specify the selector as a <code>key</code> on the bindings map and the value is the attribute name on the <code>model</code>. For example, the element with <code>name</code> property set to <code>firstName</code> will be bound to the <code>firstName</code> property on the model.</p>
+
+<h3>using the <code>onGet</code> callback function</h3>
+
+<p>As we might recollect, we have a requirement in our application to format the salary field when it gets displayed. To achieve this through <code>Stickit</code> we make use of the <code>onGet</code> callback in the bindings. As we can see from the code below, the bindings for the salary field looks a little different from others. Its declared as an object with two properties <code>observe</code> and <code>onGet</code></p>
+
+<p>```javascript</p>
+
+<p>var editorView = {</p>
+
+<pre><code>...
+    '[name = "salary"]':{
+        observe: 'salary',
+        onGet: 'salaryConverter'
+        } ,
+...
+</code></pre>
+
+<p>}</p>
+
+<p>```</p>
+
+<p>According to stickit documentation, the <code>observe</code> property is a string or an array which is used to map a model attribute to a view element. The <code>onGet</code> is a  callback which returns a formatted version of the model attribute value that is passed in before setting it in the bound view element. The <code>salaryConverter</code> will be a function that is defined with in our backbone view.</p>
+
+<h3>using the <code>update</code> callback function</h3>
+
+<p>In order to achieve our next requirement, i.e when we change our fav search engine on the editor view, we should change the label and the href property on the anchor element in the preview view. To achieve this we make use of the <code>update</code> callback function with in our model. The code below shows the bindings</p>
+
+<p>```javascript
+var viewerBindings = {</p>
+
+<pre><code>                ...
+                '[name = "favSearch"]' : {
+                    observe : 'favSearch',
+                    update: function($el, val, model, options) {
+                        $el.text(val);
+                        $el.attr("href",val);
+                        }
+                    }
+                }
+</code></pre>
+
+<p>```</p>
+
+<p>According to the Stickit documentation <code>update</code> is a callback which overrides stickit's default handling for updating the value of a bound view element. The callback function gives a handle to the view's bounded element. Using this we set the text and the href property on the model.</p>
+
+<p>Finally, with in our view render function we call <code>stickit</code> and pass in the model and bindings.</p>
+
+<p>```javascript</p>
+
+<p>//create  a Backbone view</p>
+
+<pre><code>var BaseView = Backbone.View.extend({
+    close: function () {
+        //when view closes, call unstickit to unbind Model bindings
+        this.unstickit();
+    },
+    render: function () {
+        //when the view is rendered
+        //get the templated id from passed in options
+        //NOTE: templateId is not a property of Backbone or Backbone Stickit, its a custom parameter that we pass into view's constructor           
+        var templateId = "#" + this.options.templateId;
+        //construct the template
+        var template = _.template($(templateId).html());
+        var templateHTML = template();
+        //append it to current view
+        this.$el.html(templateHTML);
+        this.stickit(this.model,this.options.bindings);
+        return this;
+    },
+    //create a converter function, that formats the 
+    //given value as money, for example 123 gets converted to
+    //$123.00, used by the money input.
+    salaryConverter : function(value,options){
+        return  accounting.formatMoney(value);
+    }
+});
+</code></pre>
+
+<p>```</p>
+
+<h1>Stickit vs ModelBinder, which one should I use?</h1>
+
+<p>In my opinion, both of these are awesome frameworks for data-binding. As we can see form the application we've built, both these frameworks provide a great way for binding your models to views.</p>
+
+<p>I did not investigate much in terms of which is efficient in terms of performance so I cannot really comment on either of these frameworks in terms of their performance.</p>
+
+<p>So, if you are planning to implement data-binding for your own application, choose a framework which best meets your application requirements and architecture.</p>
+
+<h1>About Backbone.Stickit</h1>
+
+<p>More detail's about Stickit it  can be found on their <a href="http://nytimes.github.io/backbone.stickit/">project page</a>. Special thanks to <a href="https://github.com/delambo">Matthew DeLambo</a> for developing yet another awesome data-binding framework for Backbone.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Data-Binding your Backbone Models to Views]]></title>
+    <link href="http://niki4810.github.com/blog/2013/03/02/new-post/"/>
+    <updated>2013-03-02T15:50:00-08:00</updated>
+    <id>http://niki4810.github.com/blog/2013/03/02/new-post</id>
+    <content type="html"><![CDATA[<h1>Prologue</h1>
+
+<p>One of the first things any developer migrating into the Javascript world would look for is to find common coding practices and concepts. <code>Data-Binding</code> is one such concept which facilitates bi-directional binding between views and its associated models.<!-- more --> While each programming language might have its own way for achieving this, Javascript does provide a wide variety of options for implementing <code>Data-Binding</code>. In this post, I will show, how easy it is to bind your Backbone models to views using the Backbone.ModelBinder plugin.</p>
+
+<h1>How can we achieve <code>Data-Binding</code> using ModelBinder?</h1>
+
+<p>To illustrate this, we will be building a simple application which looks like this: <a href="http://jsfiddle.net/niki4810/CSyAz/embedded/result/">Link</a>.</p>
+
+<ul>
+<li>The annotate source code for this example application can be found at: <a href="http://niki4810.github.io/annotate-sources/model-binding.html">Source</a></li>
+<li>The complete fiddle can be found at : <a href="http://jsfiddle.net/niki4810/CSyAz/">Fiddle</a></li>
+</ul>
+
+
+<p>The application contains two views, an <code>editor view</code> for entering information and a <code>viewer view</code> for previewing the same information in read only mode. Both these views display the following information :</p>
+
+<ul>
+<li>First Name</li>
+<li>Last Name</li>
+<li>Salary in USD</li>
+<li>Professional</li>
+<li>Favorite Search Engine</li>
+</ul>
+
+
+<p>Some of the requirements for our application are</p>
+
+<ol>
+<li>As we update a field in the edit view, the corresponding field on the preview view should be updated</li>
+<li>When we update the <code>salary</code> field, the view should format the value as money</li>
+<li>When the <code>favorite search engine</code> field is changed in the edit view, the preview view should render a hyperlink and should update both the <code>label</code> and the <code>href</code> properties on that hyperlink.</li>
+</ol>
+
+
+<p>Now that we have our requirements set, as a first step we create a <code>Backbone Model</code> and set some default values in it.</p>
+
+<p>```javascript</p>
+
+<pre><code>//create a instance of Backbone Model with some default values.
+var BaseViewModel = new Backbone.Model();
+BaseViewModel.set({
+        "firstName": "",
+        "lastName": "",
+        "salary": "",
+        "pro": true
+});
+</code></pre>
+
+<p>```</p>
+
+<p>Create a converter function , that formats the given value as money, for example <code>123</code> gets converted to <code>$123.00</code>. This function takes two parameters: a <code>value</code> parameter, which is the amount that needs to be formatted &amp; <code>direction</code>, which has two possible values <code>ModelToView</code> or <code>ViewToModel</code>. Both these values are automatically supplied by the model binder plugin when a change occurs on the binded element.</p>
+
+<p>```javascript
+var salaryConverter = function (direction, value) {</p>
+
+<pre><code>if (direction === "ModelToView") {
+    //format only when the direction is from model to view
+    return accounting.formatMoney(value);
+} else {
+    //from view to model, just store the plain value
+    return value;
+}
+</code></pre>
+
+<p>};
+```</p>
+
+<p>For each view we pass in a bindings object, which determines, which element should be bound to which property on the model. For example, to bind the <code>firstName</code> property on the model to an element with <code>name set to firstName</code> on the edit view, the bindings object would look like:</p>
+
+<p>```javascript
+var editorBinding = {</p>
+
+<pre><code>"firstName": '[name = "firstName"]'
+</code></pre>
+
+<p>}
+```</p>
+
+<p>The literal value <code>firstName</code> points to an <code>attribute</code> on the Backbone model, and the <code>[name="firstName"]</code> acts a selector for selecting an element in the edit view (which is a Backbone View instance).</p>
+
+<h3>Using the <code>converter</code> function</h3>
+
+<p>Similar to firstName, we set other bindings for other attributes as well</p>
+
+<p>```javascript
+var editorViewBindings = {</p>
+
+<pre><code>    "firstName": '[name = "firstName"]', 
+    "lastName": '[name = "lastName"]',
+    "salary": {
+    selector: '[name = "salary"]',
+    converter: salaryConverter
+},
+    "pro": '[name = "pro"]',
+    "favSearch": '[name = "favSearch"]'
+</code></pre>
+
+<p>};
+```</p>
+
+<p>As you might have already noticed, for the <code>salary</code> attribute we set the value as a object which internally has two properties:</p>
+
+<ul>
+<li><p><code>selector</code> property determines which element this property should be bound to. In this case an element with <code>name property set to salary</code>.</p></li>
+<li><p>We assign the <code>salaryConverter</code> function to the <code>converter</code> property. So whenever there is a change event on element with <code>[name = "salary"]</code>, the Backbone ModelBinder plugin calls the <code>salaryConverter</code> twice. Once from <code>Model to view</code> and the other from <code>View to Model</code>. Through this we can achieve our second requirement where we want to format the salary attribute as money when displaying on the view.</p></li>
+</ul>
+
+
+<h3>using the <code>elAttribute</code></h3>
+
+<p>Similar to the edit view bindings we construct a binding object for the viewer view. The code looks something like this</p>
+
+<p>```javascript
+var viewerBindings = {</p>
+
+<pre><code>"firstName": '[name = "firstName"]',
+    "lastName": '[name = "lastName"]',
+    "salary": {
+    selector: '[name = "salary"]',
+    converter: salaryConverter
+},
+    "pro": '[name = "pro"]',
+    "favSearch": [{
+    selector: '[name = "favSearch"]',
+    elAttribute: "href"
+}, {
+    selector: '[name = "favSearch"]'
+}]
+</code></pre>
+
+<p>}
+```</p>
+
+<p>One major change in this binding object is that, we assign an array to the <code>favSearch</code> property. We do this to achieve our third requirement, where we want to bind the label and the href properties on the hyperlink that gets rendered in the viewer view.</p>
+
+<p>While the second element in the array is a simple selector <code>selector: '[name = "favSearch"]'</code> the first element introduces us to a new property called <code>elAttribute</code>. What this means is that, when ever there is a change on the <code>favSearch</code> property, update the <code>href</code> property on the element with name <code>[name = "favSearch"]</code>.</p>
+
+<p>We did not specify the <code>elAttribute</code> for other bindings because, the ModelBinder applies it on the text property of each element by default.</p>
+
+<h3>Applying our binding</h3>
+
+<p>Now that we have our binding objects ready, we will have to create a Backbone view for applying this binding. Since the app we are developing is pretty simple and there is no much difference between both our view, we construct on single backbone view that takes the template id and bindings as parameters. Our view code looks like this</p>
+
+<p>```javascript
+//create  a Backbone view
+   var BaseView = Backbone.View.extend({</p>
+
+<pre><code>   //local variable for model binder
+   _modelBinder: undefined,
+   initialize: function () {
+       //on view initialize, initialize _modelBinder
+       this._modelBinder = new Backbone.ModelBinder();
+   },
+   close: function () {
+       //when view closes, unbind Model bindings
+       this._modelBinder.unbind();
+   },
+   render: function () {
+       //when the view is rendered
+       //get the templates id from passed in options
+       //NOTE: templateId is not a property of Backbone or       ModelBinder, its a custom parameter that we pass into view's constructor
+
+       var templateId = "#" + this.options.templateId;
+
+       //construct the template
+       var template = _.template($(templateId).html());
+       var templateHTML = template();
+       //append it to current view
+       this.$el.html(templateHTML);
+
+       //get the bindings attribute from passed options
+        //NOTE: bindings is not a property of Backbone, its a custom parameter that we pass into view's constructor
+       var bindings = this.options.bindings;
+
+       //call modelBinder bind api to apply bindings on the current view
+       this._modelBinder.bind(
+       this.model /*the model to bind*/ ,
+       this.el /*root element*/ ,
+       bindings /*bindings*/ );
+
+       return this;
+   }
+</code></pre>
+
+<p>   });
+```</p>
+
+<p>While the above code simply shows a standard Backbone view object. There are two main parts to focus. In the <code>initialize</code> function we create a new instance of model binder and assign it to a local variable.</p>
+
+<p><code>javascript
+ this._modelBinder = new Backbone.ModelBinder();
+</code></p>
+
+<p>The main place where our bindings are applied is in the <code>render</code> function.</p>
+
+<p><code>javascript
+this._modelBinder.bind(
+this.model /*the model to bind*/ ,
+this.el /*root element*/ ,
+bindings /*bindings*/ );
+</code></p>
+
+<p>As we can see we simply call the <code>bind</code> function on the modelBinder to bind a model to the view's root element. This function accepts three parameters <code>the model</code> a backbone model containing attributes information, <code>root el</code> the parent level element of the backbone view and <code>bindings</code> parameter which specific the relationship between the backbone model attributes and view elements.</p>
+
+<p>Now that we have everything setup all we need to do is render both the views and append it to the DOM.</p>
+
+<p>```javascript
+//instantiate the editor view by passing the model, template id and
+//bindings into the constructor
+var myEditorView = new BaseView({</p>
+
+<pre><code>model: BaseViewModel,
+templateId: "editor-template",
+bindings: editorViewBindings
+</code></pre>
+
+<p>});</p>
+
+<p> //instantiate the viewer view by passing the model, template id and
+//bindings into the constructor
+var myViewerView = new BaseView({</p>
+
+<pre><code>model: BaseViewModel,
+templateId: "viewer-template",
+bindings: viewerBindings
+</code></pre>
+
+<p>});</p>
+
+<p>//append both the Backbone views to the container
+$(".container").append(myEditorView.render().$el);
+$(".container").append(myViewerView.render().$el);
+```</p>
+
+<p>As mentioned earlier, the complete source code for this example can be found at the following <a href="http://jsfiddle.net/niki4810/CSyAz/">fiddle</a>. Although this looks like a lot of code, it simple once we understand the basic concept behind model binding.</p>
+
+<h1>What are other alternatives for <code>Data-Binding</code> Backbone Views?</h1>
+
+<p>As they say, there are a trillion ways for doing million things, Here are some other options for <code>Data-Binding</code> your Backbone Models to Views.</p>
+
+<ul>
+<li><a href="http://kmalakoff.github.io/knockback/">KnockBack</a></li>
+<li><a href="http://rivetsjs.com/">Rivets.js</a></li>
+</ul>
+
+
+<p>I personally feel ModelBinder is much simpler in terms of implementation than the above two frameworks.</p>
+
+<h1>About Backbone.ModelBinder</h1>
+
+<p>Special thanks to <a href="https://github.com/theironcook">Bart Wood</a> for developing such an awesome framework. More details can be found at <a href="https://github.com/theironcook/Backbone.ModelBinder">Backbone.ModelBinder</a>.</p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Data-Binding | Octoblog]]></title>
+  <link href="http://niki4810.github.com/blog/categories/data-binding/atom.xml" rel="self"/>
+  <link href="http://niki4810.github.com/"/>
+  <updated>2014-12-13T22:18:15-08:00</updated>
+  <id>http://niki4810.github.com/</id>
+  <author>
+    <name><![CDATA[Nikhilesh Katakam]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Databinding using Backbone Stickit]]></title>
+    <link href="http://niki4810.github.com/blog/2013/05/04/databinding-using-backbone-stickit/"/>
+    <updated>2013-05-04T10:56:00-07:00</updated>
+    <id>http://niki4810.github.com/blog/2013/05/04/databinding-using-backbone-stickit</id>
+    <content type="html"><![CDATA[<p>In my previous <a href="http://niki4810.github.io/blog/2013/03/02/new-post/">post</a> we looked at setting up data-bindings between our backbone views and models using the <code>Backbone.Modelbinder</code> plugin. In this post, I will demonstrate another viable alternative for data-binding called <code>Backbone.Stickit</code>.<!-- more --></p>
+
+<h1>How can we achieve data-binding using <code>Backbone.Stickit</code>?</h1>
+
+<p>To illustrate this we will build the same application as we did in the previous <a href="http://niki4810.github.io/blog/2013/03/02/new-post/">post</a>. The only difference is that the example in this post uses <code>Backbone.Stickit</code> for <code>data-binding</code>.</p>
+
+<ul>
+<li>The annotated source code for this example can be found at the following <a href="http://niki4810.github.io/annotate-sources/databinding-using-stickit.html">link</a></li>
+<li>The complete fiddle can be found at the following <a href="http://jsfiddle.net/niki4810/yQjPD/">link</a></li>
+<li>A full screen preview of this application can be found at the following <a href="http://jsfiddle.net/niki4810/yQjPD/embedded/result/">link</a></li>
+</ul>
+
+
+<p>Surprisingly, the changes I had to make in order to convert my previous example to use Backbone.Stickit were pretty minimal.  To start off the bindings maps for the <code>editor</code> and the <code>preview</code> views are as follows.</p>
+
+<p>```javascript
+var editorViewBindings = {</p>
+
+<pre><code>    '[name = "firstName"]' : "firstName", 
+    '[name = "lastName"]' : "lastName",
+    '[name = "salary"]':{
+        observe: 'salary',
+        onGet: 'salaryConverter'
+        } ,
+    '[name = "pro"]' : "pro",
+    '[name = "favSearch"]': "favSearch"
+    };
+</code></pre>
+
+<p>var viewerBindings = {</p>
+
+<pre><code>                '[name = "firstName"]' : "firstName", 
+                '[name = "lastName"]' : "lastName",
+                '[name = "salary"]':{
+                    observe: 'salary',
+                    onGet: 'salaryConverter'    
+                    } ,
+                '[name = "pro"]' : "pro",
+                '[name = "favSearch"]' : {
+                    observe : 'favSearch',
+                    update: function($el, val, model, options) {
+                        $el.text(val);
+                        $el.attr("href",val);
+                        }
+                    }
+                }
+</code></pre>
+
+<p>```</p>
+
+<p>Some notable differences are that, the bindings map declarations are opposite to that of ModelBinder. Here we specify the selector as a <code>key</code> on the bindings map and the value is the attribute name on the <code>model</code>. For example, the element with <code>name</code> property set to <code>firstName</code> will be bound to the <code>firstName</code> property on the model.</p>
+
+<h3>using the <code>onGet</code> callback function</h3>
+
+<p>As we might recollect, we have a requirement in our application to format the salary field when it gets displayed. To achieve this through <code>Stickit</code> we make use of the <code>onGet</code> callback in the bindings. As we can see from the code below, the bindings for the salary field looks a little different from others. Its declared as an object with two properties <code>observe</code> and <code>onGet</code></p>
+
+<p>```javascript</p>
+
+<p>var editorView = {</p>
+
+<pre><code>...
+    '[name = "salary"]':{
+        observe: 'salary',
+        onGet: 'salaryConverter'
+        } ,
+...
+</code></pre>
+
+<p>}</p>
+
+<p>```</p>
+
+<p>According to stickit documentation, the <code>observe</code> property is a string or an array which is used to map a model attribute to a view element. The <code>onGet</code> is a  callback which returns a formatted version of the model attribute value that is passed in before setting it in the bound view element. The <code>salaryConverter</code> will be a function that is defined with in our backbone view.</p>
+
+<h3>using the <code>update</code> callback function</h3>
+
+<p>In order to achieve our next requirement, i.e when we change our fav search engine on the editor view, we should change the label and the href property on the anchor element in the preview view. To achieve this we make use of the <code>update</code> callback function with in our model. The code below shows the bindings</p>
+
+<p>```javascript
+var viewerBindings = {</p>
+
+<pre><code>                ...
+                '[name = "favSearch"]' : {
+                    observe : 'favSearch',
+                    update: function($el, val, model, options) {
+                        $el.text(val);
+                        $el.attr("href",val);
+                        }
+                    }
+                }
+</code></pre>
+
+<p>```</p>
+
+<p>According to the Stickit documentation <code>update</code> is a callback which overrides stickit's default handling for updating the value of a bound view element. The callback function gives a handle to the view's bounded element. Using this we set the text and the href property on the model.</p>
+
+<p>Finally, with in our view render function we call <code>stickit</code> and pass in the model and bindings.</p>
+
+<p>```javascript</p>
+
+<p>//create  a Backbone view</p>
+
+<pre><code>var BaseView = Backbone.View.extend({
+    close: function () {
+        //when view closes, call unstickit to unbind Model bindings
+        this.unstickit();
+    },
+    render: function () {
+        //when the view is rendered
+        //get the templated id from passed in options
+        //NOTE: templateId is not a property of Backbone or Backbone Stickit, its a custom parameter that we pass into view's constructor           
+        var templateId = "#" + this.options.templateId;
+        //construct the template
+        var template = _.template($(templateId).html());
+        var templateHTML = template();
+        //append it to current view
+        this.$el.html(templateHTML);
+        this.stickit(this.model,this.options.bindings);
+        return this;
+    },
+    //create a converter function, that formats the 
+    //given value as money, for example 123 gets converted to
+    //$123.00, used by the money input.
+    salaryConverter : function(value,options){
+        return  accounting.formatMoney(value);
+    }
+});
+</code></pre>
+
+<p>```</p>
+
+<h1>Stickit vs ModelBinder, which one should I use?</h1>
+
+<p>In my opinion, both of these are awesome frameworks for data-binding. As we can see form the application we've built, both these frameworks provide a great way for binding your models to views.</p>
+
+<p>I did not investigate much in terms of which is efficient in terms of performance so I cannot really comment on either of these frameworks in terms of their performance.</p>
+
+<p>So, if you are planning to implement data-binding for your own application, choose a framework which best meets your application requirements and architecture.</p>
+
+<h1>About Backbone.Stickit</h1>
+
+<p>More detail's about Stickit it  can be found on their <a href="http://nytimes.github.io/backbone.stickit/">project page</a>. Special thanks to <a href="https://github.com/delambo">Matthew DeLambo</a> for developing yet another awesome data-binding framework for Backbone.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Data-Binding your Backbone Models to Views]]></title>
+    <link href="http://niki4810.github.com/blog/2013/03/02/new-post/"/>
+    <updated>2013-03-02T15:50:00-08:00</updated>
+    <id>http://niki4810.github.com/blog/2013/03/02/new-post</id>
+    <content type="html"><![CDATA[<h1>Prologue</h1>
+
+<p>One of the first things any developer migrating into the Javascript world would look for is to find common coding practices and concepts. <code>Data-Binding</code> is one such concept which facilitates bi-directional binding between views and its associated models.<!-- more --> While each programming language might have its own way for achieving this, Javascript does provide a wide variety of options for implementing <code>Data-Binding</code>. In this post, I will show, how easy it is to bind your Backbone models to views using the Backbone.ModelBinder plugin.</p>
+
+<h1>How can we achieve <code>Data-Binding</code> using ModelBinder?</h1>
+
+<p>To illustrate this, we will be building a simple application which looks like this: <a href="http://jsfiddle.net/niki4810/CSyAz/embedded/result/">Link</a>.</p>
+
+<ul>
+<li>The annotate source code for this example application can be found at: <a href="http://niki4810.github.io/annotate-sources/model-binding.html">Source</a></li>
+<li>The complete fiddle can be found at : <a href="http://jsfiddle.net/niki4810/CSyAz/">Fiddle</a></li>
+</ul>
+
+
+<p>The application contains two views, an <code>editor view</code> for entering information and a <code>viewer view</code> for previewing the same information in read only mode. Both these views display the following information :</p>
+
+<ul>
+<li>First Name</li>
+<li>Last Name</li>
+<li>Salary in USD</li>
+<li>Professional</li>
+<li>Favorite Search Engine</li>
+</ul>
+
+
+<p>Some of the requirements for our application are</p>
+
+<ol>
+<li>As we update a field in the edit view, the corresponding field on the preview view should be updated</li>
+<li>When we update the <code>salary</code> field, the view should format the value as money</li>
+<li>When the <code>favorite search engine</code> field is changed in the edit view, the preview view should render a hyperlink and should update both the <code>label</code> and the <code>href</code> properties on that hyperlink.</li>
+</ol>
+
+
+<p>Now that we have our requirements set, as a first step we create a <code>Backbone Model</code> and set some default values in it.</p>
+
+<p>```javascript</p>
+
+<pre><code>//create a instance of Backbone Model with some default values.
+var BaseViewModel = new Backbone.Model();
+BaseViewModel.set({
+        "firstName": "",
+        "lastName": "",
+        "salary": "",
+        "pro": true
+});
+</code></pre>
+
+<p>```</p>
+
+<p>Create a converter function , that formats the given value as money, for example <code>123</code> gets converted to <code>$123.00</code>. This function takes two parameters: a <code>value</code> parameter, which is the amount that needs to be formatted &amp; <code>direction</code>, which has two possible values <code>ModelToView</code> or <code>ViewToModel</code>. Both these values are automatically supplied by the model binder plugin when a change occurs on the binded element.</p>
+
+<p>```javascript
+var salaryConverter = function (direction, value) {</p>
+
+<pre><code>if (direction === "ModelToView") {
+    //format only when the direction is from model to view
+    return accounting.formatMoney(value);
+} else {
+    //from view to model, just store the plain value
+    return value;
+}
+</code></pre>
+
+<p>};
+```</p>
+
+<p>For each view we pass in a bindings object, which determines, which element should be bound to which property on the model. For example, to bind the <code>firstName</code> property on the model to an element with <code>name set to firstName</code> on the edit view, the bindings object would look like:</p>
+
+<p>```javascript
+var editorBinding = {</p>
+
+<pre><code>"firstName": '[name = "firstName"]'
+</code></pre>
+
+<p>}
+```</p>
+
+<p>The literal value <code>firstName</code> points to an <code>attribute</code> on the Backbone model, and the <code>[name="firstName"]</code> acts a selector for selecting an element in the edit view (which is a Backbone View instance).</p>
+
+<h3>Using the <code>converter</code> function</h3>
+
+<p>Similar to firstName, we set other bindings for other attributes as well</p>
+
+<p>```javascript
+var editorViewBindings = {</p>
+
+<pre><code>    "firstName": '[name = "firstName"]', 
+    "lastName": '[name = "lastName"]',
+    "salary": {
+    selector: '[name = "salary"]',
+    converter: salaryConverter
+},
+    "pro": '[name = "pro"]',
+    "favSearch": '[name = "favSearch"]'
+</code></pre>
+
+<p>};
+```</p>
+
+<p>As you might have already noticed, for the <code>salary</code> attribute we set the value as a object which internally has two properties:</p>
+
+<ul>
+<li><p><code>selector</code> property determines which element this property should be bound to. In this case an element with <code>name property set to salary</code>.</p></li>
+<li><p>We assign the <code>salaryConverter</code> function to the <code>converter</code> property. So whenever there is a change event on element with <code>[name = "salary"]</code>, the Backbone ModelBinder plugin calls the <code>salaryConverter</code> twice. Once from <code>Model to view</code> and the other from <code>View to Model</code>. Through this we can achieve our second requirement where we want to format the salary attribute as money when displaying on the view.</p></li>
+</ul>
+
+
+<h3>using the <code>elAttribute</code></h3>
+
+<p>Similar to the edit view bindings we construct a binding object for the viewer view. The code looks something like this</p>
+
+<p>```javascript
+var viewerBindings = {</p>
+
+<pre><code>"firstName": '[name = "firstName"]',
+    "lastName": '[name = "lastName"]',
+    "salary": {
+    selector: '[name = "salary"]',
+    converter: salaryConverter
+},
+    "pro": '[name = "pro"]',
+    "favSearch": [{
+    selector: '[name = "favSearch"]',
+    elAttribute: "href"
+}, {
+    selector: '[name = "favSearch"]'
+}]
+</code></pre>
+
+<p>}
+```</p>
+
+<p>One major change in this binding object is that, we assign an array to the <code>favSearch</code> property. We do this to achieve our third requirement, where we want to bind the label and the href properties on the hyperlink that gets rendered in the viewer view.</p>
+
+<p>While the second element in the array is a simple selector <code>selector: '[name = "favSearch"]'</code> the first element introduces us to a new property called <code>elAttribute</code>. What this means is that, when ever there is a change on the <code>favSearch</code> property, update the <code>href</code> property on the element with name <code>[name = "favSearch"]</code>.</p>
+
+<p>We did not specify the <code>elAttribute</code> for other bindings because, the ModelBinder applies it on the text property of each element by default.</p>
+
+<h3>Applying our binding</h3>
+
+<p>Now that we have our binding objects ready, we will have to create a Backbone view for applying this binding. Since the app we are developing is pretty simple and there is no much difference between both our view, we construct on single backbone view that takes the template id and bindings as parameters. Our view code looks like this</p>
+
+<p>```javascript
+//create  a Backbone view
+   var BaseView = Backbone.View.extend({</p>
+
+<pre><code>   //local variable for model binder
+   _modelBinder: undefined,
+   initialize: function () {
+       //on view initialize, initialize _modelBinder
+       this._modelBinder = new Backbone.ModelBinder();
+   },
+   close: function () {
+       //when view closes, unbind Model bindings
+       this._modelBinder.unbind();
+   },
+   render: function () {
+       //when the view is rendered
+       //get the templates id from passed in options
+       //NOTE: templateId is not a property of Backbone or       ModelBinder, its a custom parameter that we pass into view's constructor
+
+       var templateId = "#" + this.options.templateId;
+
+       //construct the template
+       var template = _.template($(templateId).html());
+       var templateHTML = template();
+       //append it to current view
+       this.$el.html(templateHTML);
+
+       //get the bindings attribute from passed options
+        //NOTE: bindings is not a property of Backbone, its a custom parameter that we pass into view's constructor
+       var bindings = this.options.bindings;
+
+       //call modelBinder bind api to apply bindings on the current view
+       this._modelBinder.bind(
+       this.model /*the model to bind*/ ,
+       this.el /*root element*/ ,
+       bindings /*bindings*/ );
+
+       return this;
+   }
+</code></pre>
+
+<p>   });
+```</p>
+
+<p>While the above code simply shows a standard Backbone view object. There are two main parts to focus. In the <code>initialize</code> function we create a new instance of model binder and assign it to a local variable.</p>
+
+<p><code>javascript
+ this._modelBinder = new Backbone.ModelBinder();
+</code></p>
+
+<p>The main place where our bindings are applied is in the <code>render</code> function.</p>
+
+<p><code>javascript
+this._modelBinder.bind(
+this.model /*the model to bind*/ ,
+this.el /*root element*/ ,
+bindings /*bindings*/ );
+</code></p>
+
+<p>As we can see we simply call the <code>bind</code> function on the modelBinder to bind a model to the view's root element. This function accepts three parameters <code>the model</code> a backbone model containing attributes information, <code>root el</code> the parent level element of the backbone view and <code>bindings</code> parameter which specific the relationship between the backbone model attributes and view elements.</p>
+
+<p>Now that we have everything setup all we need to do is render both the views and append it to the DOM.</p>
+
+<p>```javascript
+//instantiate the editor view by passing the model, template id and
+//bindings into the constructor
+var myEditorView = new BaseView({</p>
+
+<pre><code>model: BaseViewModel,
+templateId: "editor-template",
+bindings: editorViewBindings
+</code></pre>
+
+<p>});</p>
+
+<p> //instantiate the viewer view by passing the model, template id and
+//bindings into the constructor
+var myViewerView = new BaseView({</p>
+
+<pre><code>model: BaseViewModel,
+templateId: "viewer-template",
+bindings: viewerBindings
+</code></pre>
+
+<p>});</p>
+
+<p>//append both the Backbone views to the container
+$(".container").append(myEditorView.render().$el);
+$(".container").append(myViewerView.render().$el);
+```</p>
+
+<p>As mentioned earlier, the complete source code for this example can be found at the following <a href="http://jsfiddle.net/niki4810/CSyAz/">fiddle</a>. Although this looks like a lot of code, it simple once we understand the basic concept behind model binding.</p>
+
+<h1>What are other alternatives for <code>Data-Binding</code> Backbone Views?</h1>
+
+<p>As they say, there are a trillion ways for doing million things, Here are some other options for <code>Data-Binding</code> your Backbone Models to Views.</p>
+
+<ul>
+<li><a href="http://kmalakoff.github.io/knockback/">KnockBack</a></li>
+<li><a href="http://rivetsjs.com/">Rivets.js</a></li>
+</ul>
+
+
+<p>I personally feel ModelBinder is much simpler in terms of implementation than the above two frameworks.</p>
+
+<h1>About Backbone.ModelBinder</h1>
+
+<p>Special thanks to <a href="https://github.com/theironcook">Bart Wood</a> for developing such an awesome framework. More details can be found at <a href="https://github.com/theironcook/Backbone.ModelBinder">Backbone.ModelBinder</a>.</p>
+]]></content>
+  </entry>
+  
+</feed>

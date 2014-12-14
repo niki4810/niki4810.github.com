@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Gulp | Octoblog]]></title>
+  <link href="http://niki4810.github.com/blog/categories/gulp/atom.xml" rel="self"/>
+  <link href="http://niki4810.github.com/"/>
+  <updated>2014-12-13T22:18:15-08:00</updated>
+  <id>http://niki4810.github.com/</id>
+  <author>
+    <name><![CDATA[Nikhilesh Katakam]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Introducing gulp-devtools]]></title>
+    <link href="http://niki4810.github.com/blog/2014/12/13/introducing-gulp-devtools/"/>
+    <updated>2014-12-13T21:46:00-08:00</updated>
+    <id>http://niki4810.github.com/blog/2014/12/13/introducing-gulp-devtools</id>
+    <content type="html"><![CDATA[<p>Its been a while since my previous blog post and I am very happy to finally made some time to blog agian. Recently I have been playing a lot with <a href="https://developer.chrome.com/extensions/getstarted">chrome extension</a> development as its so much fun.<!-- more --></p>
+
+<p>Chrome provides a very easy and neat way to re-use your existing web development skills to write powerful extensions and apps. These app can be published onto the <a href="https://chrome.google.com/webstore/category/apps">chrome web store</a> and can be dowloaded onto any chrome browser.</p>
+
+<p>As a part of this learning process I happen to create my first chrome extension called <a href="http://niki4810.github.io/gulp-devtools/">gulp-devtools</a>.</p>
+
+<p>gulp-devtools, is simple chrome extension, that lets you run your gulp tasks from within your chrome browser via a UI. The below image shows a demo of gulp-devtools</p>
+
+<p><img src="https://raw.githubusercontent.com/niki4810/gulp-devtools/gh-pages/gulp-devtools-gif.gif" alt="alt tag" /></p>
+
+<p>Its provides some cool features to search through a list of all the gulp tasks in your project, start/stop a gulp task and run gulp tasks in the background (useful for tasks like watch).</p>
+
+<p>You can download the extension via the <a href="https://chrome.google.com/webstore/detail/gulp-devtools/ojpmgjhofceebfifeajnjojpokebkkji">chrome web store</a>. If you'd like to contribute to it on see the latest on this plugin development, you can checkout the <a href="https://github.com/niki4810/gulp-devtools">github repo</a>.</p>
+]]></content>
+  </entry>
+  
+</feed>

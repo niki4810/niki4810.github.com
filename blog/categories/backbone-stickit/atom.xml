@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Backbone-Stickit | Octoblog]]></title>
+  <link href="http://niki4810.github.com/blog/categories/backbone-stickit/atom.xml" rel="self"/>
+  <link href="http://niki4810.github.com/"/>
+  <updated>2014-12-13T22:18:15-08:00</updated>
+  <id>http://niki4810.github.com/</id>
+  <author>
+    <name><![CDATA[Nikhilesh Katakam]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Databinding using Backbone Stickit]]></title>
+    <link href="http://niki4810.github.com/blog/2013/05/04/databinding-using-backbone-stickit/"/>
+    <updated>2013-05-04T10:56:00-07:00</updated>
+    <id>http://niki4810.github.com/blog/2013/05/04/databinding-using-backbone-stickit</id>
+    <content type="html"><![CDATA[<p>In my previous <a href="http://niki4810.github.io/blog/2013/03/02/new-post/">post</a> we looked at setting up data-bindings between our backbone views and models using the <code>Backbone.Modelbinder</code> plugin. In this post, I will demonstrate another viable alternative for data-binding called <code>Backbone.Stickit</code>.<!-- more --></p>
+
+<h1>How can we achieve data-binding using <code>Backbone.Stickit</code>?</h1>
+
+<p>To illustrate this we will build the same application as we did in the previous <a href="http://niki4810.github.io/blog/2013/03/02/new-post/">post</a>. The only difference is that the example in this post uses <code>Backbone.Stickit</code> for <code>data-binding</code>.</p>
+
+<ul>
+<li>The annotated source code for this example can be found at the following <a href="http://niki4810.github.io/annotate-sources/databinding-using-stickit.html">link</a></li>
+<li>The complete fiddle can be found at the following <a href="http://jsfiddle.net/niki4810/yQjPD/">link</a></li>
+<li>A full screen preview of this application can be found at the following <a href="http://jsfiddle.net/niki4810/yQjPD/embedded/result/">link</a></li>
+</ul>
+
+
+<p>Surprisingly, the changes I had to make in order to convert my previous example to use Backbone.Stickit were pretty minimal.  To start off the bindings maps for the <code>editor</code> and the <code>preview</code> views are as follows.</p>
+
+<p>```javascript
+var editorViewBindings = {</p>
+
+<pre><code>    '[name = "firstName"]' : "firstName", 
+    '[name = "lastName"]' : "lastName",
+    '[name = "salary"]':{
+        observe: 'salary',
+        onGet: 'salaryConverter'
+        } ,
+    '[name = "pro"]' : "pro",
+    '[name = "favSearch"]': "favSearch"
+    };
+</code></pre>
+
+<p>var viewerBindings = {</p>
+
+<pre><code>                '[name = "firstName"]' : "firstName", 
+                '[name = "lastName"]' : "lastName",
+                '[name = "salary"]':{
+                    observe: 'salary',
+                    onGet: 'salaryConverter'    
+                    } ,
+                '[name = "pro"]' : "pro",
+                '[name = "favSearch"]' : {
+                    observe : 'favSearch',
+                    update: function($el, val, model, options) {
+                        $el.text(val);
+                        $el.attr("href",val);
+                        }
+                    }
+                }
+</code></pre>
+
+<p>```</p>
+
+<p>Some notable differences are that, the bindings map declarations are opposite to that of ModelBinder. Here we specify the selector as a <code>key</code> on the bindings map and the value is the attribute name on the <code>model</code>. For example, the element with <code>name</code> property set to <code>firstName</code> will be bound to the <code>firstName</code> property on the model.</p>
+
+<h3>using the <code>onGet</code> callback function</h3>
+
+<p>As we might recollect, we have a requirement in our application to format the salary field when it gets displayed. To achieve this through <code>Stickit</code> we make use of the <code>onGet</code> callback in the bindings. As we can see from the code below, the bindings for the salary field looks a little different from others. Its declared as an object with two properties <code>observe</code> and <code>onGet</code></p>
+
+<p>```javascript</p>
+
+<p>var editorView = {</p>
+
+<pre><code>...
+    '[name = "salary"]':{
+        observe: 'salary',
+        onGet: 'salaryConverter'
+        } ,
+...
+</code></pre>
+
+<p>}</p>
+
+<p>```</p>
+
+<p>According to stickit documentation, the <code>observe</code> property is a string or an array which is used to map a model attribute to a view element. The <code>onGet</code> is a  callback which returns a formatted version of the model attribute value that is passed in before setting it in the bound view element. The <code>salaryConverter</code> will be a function that is defined with in our backbone view.</p>
+
+<h3>using the <code>update</code> callback function</h3>
+
+<p>In order to achieve our next requirement, i.e when we change our fav search engine on the editor view, we should change the label and the href property on the anchor element in the preview view. To achieve this we make use of the <code>update</code> callback function with in our model. The code below shows the bindings</p>
+
+<p>```javascript
+var viewerBindings = {</p>
+
+<pre><code>                ...
+                '[name = "favSearch"]' : {
+                    observe : 'favSearch',
+                    update: function($el, val, model, options) {
+                        $el.text(val);
+                        $el.attr("href",val);
+                        }
+                    }
+                }
+</code></pre>
+
+<p>```</p>
+
+<p>According to the Stickit documentation <code>update</code> is a callback which overrides stickit's default handling for updating the value of a bound view element. The callback function gives a handle to the view's bounded element. Using this we set the text and the href property on the model.</p>
+
+<p>Finally, with in our view render function we call <code>stickit</code> and pass in the model and bindings.</p>
+
+<p>```javascript</p>
+
+<p>//create  a Backbone view</p>
+
+<pre><code>var BaseView = Backbone.View.extend({
+    close: function () {
+        //when view closes, call unstickit to unbind Model bindings
+        this.unstickit();
+    },
+    render: function () {
+        //when the view is rendered
+        //get the templated id from passed in options
+        //NOTE: templateId is not a property of Backbone or Backbone Stickit, its a custom parameter that we pass into view's constructor           
+        var templateId = "#" + this.options.templateId;
+        //construct the template
+        var template = _.template($(templateId).html());
+        var templateHTML = template();
+        //append it to current view
+        this.$el.html(templateHTML);
+        this.stickit(this.model,this.options.bindings);
+        return this;
+    },
+    //create a converter function, that formats the 
+    //given value as money, for example 123 gets converted to
+    //$123.00, used by the money input.
+    salaryConverter : function(value,options){
+        return  accounting.formatMoney(value);
+    }
+});
+</code></pre>
+
+<p>```</p>
+
+<h1>Stickit vs ModelBinder, which one should I use?</h1>
+
+<p>In my opinion, both of these are awesome frameworks for data-binding. As we can see form the application we've built, both these frameworks provide a great way for binding your models to views.</p>
+
+<p>I did not investigate much in terms of which is efficient in terms of performance so I cannot really comment on either of these frameworks in terms of their performance.</p>
+
+<p>So, if you are planning to implement data-binding for your own application, choose a framework which best meets your application requirements and architecture.</p>
+
+<h1>About Backbone.Stickit</h1>
+
+<p>More detail's about Stickit it  can be found on their <a href="http://nytimes.github.io/backbone.stickit/">project page</a>. Special thanks to <a href="https://github.com/delambo">Matthew DeLambo</a> for developing yet another awesome data-binding framework for Backbone.</p>
+]]></content>
+  </entry>
+  
+</feed>
